@@ -1,6 +1,6 @@
 import styled from 'styled-components';
 
-const DigitalButton = ({ bgColor = '' }) => {
+const DigitalButton = ({ }) => {
 
     return (
         <div className="flex self-center min-w-max justify-center" >

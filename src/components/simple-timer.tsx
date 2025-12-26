@@ -7,7 +7,6 @@ interface SimpleTimerProps {
 }
 
 export function SimpleTimer({
-  totalDuration,
   initialRemainingTime,
   onComplete,
 }: SimpleTimerProps) {
