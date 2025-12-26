@@ -29,7 +29,7 @@ export function LoginForm({
     console.log(backendUrl, xapiKey);
     localStorage.setItem('backend_url', backendUrl)
     localStorage.setItem('x_api_key', xapiKey)
-    fetch(`http://${backendUrl}/login`, {
+    fetch(`http://${backendUrl}/auth/login`, {
       method: 'GET',
       headers: {
         'x-api-key': xapiKey

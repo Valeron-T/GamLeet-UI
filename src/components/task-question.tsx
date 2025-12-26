@@ -1,4 +1,4 @@
-import { CheckCircle, Circle, Clock, ShieldAlertIcon } from "lucide-react"
+import { CheckCircle, Circle, Clock, Zap } from "lucide-react"
 import { Button } from "@/components/ui/button"
 import {
     Item,
@@ -8,9 +8,7 @@ import {
     ItemMedia,
     ItemTitle,
 } from "@/components/ui/item"
-import { Badge } from "@/components/ui/badge"
 import { RiCopperCoinFill } from "react-icons/ri";
-import { useRef } from "react";
 import { TagScroller } from "./tag-scroller";
 
 interface TaskQuestionProps {
@@ -39,6 +37,12 @@ const difficultyReward = {
     'hard': 50
 }
 
+const difficultyXP = {
+    'easy': 50,
+    'med': 100,
+    'hard': 200
+}
+
 function TaskQuestion({ title, tags = [], state, slug, difficulty = "easy" }: TaskQuestionProps) {
     return (
         <Item className={difficultyStyle[difficulty]} variant="outline">
@@ -52,15 +56,24 @@ function TaskQuestion({ title, tags = [], state, slug, difficulty = "easy" }: Ta
                 </ItemDescription>
             </ItemContent>
             <ItemActions>
-                <p className="-mr-1">{difficultyReward[difficulty]}</p>
-                <RiCopperCoinFill size={20} color="#ffc900" />
+                <div className="flex flex-col items-end gap-1.5 min-w-[80px]">
+                    <div className="flex items-center gap-1.5 bg-secondary/30 px-2 py-0.5 rounded-md border border-border/50">
+                        <RiCopperCoinFill size={14} color="#ffc900" />
+                        <span className="text-[10px] font-black font-mono">{difficultyReward[difficulty]} GC</span>
+                    </div>
+                    <div className="flex items-center gap-1.5 bg-primary/10 px-2 py-0.5 rounded-md border border-primary/20">
+                        <Zap size={10} className="text-primary fill-primary" />
+                        <span className="text-[10px] font-black font-mono text-primary">+{difficultyXP[difficulty]} XP</span>
+                    </div>
+                </div>
 
                 <Button
                     size="sm"
                     variant="outline"
+                    className="h-9 px-4 font-bold uppercase tracking-tight hover:bg-primary hover:text-primary-foreground transition-all"
                     onClick={() => window.open(`https://leetcode.com/problems/${slug}`, '_blank')}
                 >
-                    Open
+                    Solve
                 </Button>
             </ItemActions>
         </Item>

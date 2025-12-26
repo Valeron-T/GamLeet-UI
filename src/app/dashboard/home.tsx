@@ -5,13 +5,29 @@ import { SectionCards } from "@/components/section-cards.tsx"
 import SimpleTimer from "@/components/simple-timer"
 import { SiteHeader } from "@/components/site-header.tsx"
 import TaskQuestion from "@/components/task-question"
-import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "@/components/ui/card"
+import { Card, CardContent } from "@/components/ui/card"
 import { SidebarInset, SidebarProvider } from "@/components/ui/sidebar.tsx"
 import { Progress } from "@/components/ui/progress";
 import { Calendar, RefreshCcw } from "lucide-react"
 import { FaFire } from "react-icons/fa";
 import { useEffect, useState } from "react";
-import { fetchDailyQuestions } from "@/api/dashboard";
+import { fetchDailyQuestions, DailyQuestions } from "@/api/dashboard";
+import { Skeleton } from "@/components/ui/skeleton.tsx";
+
+function TaskQuestionSkeleton() {
+  return (
+    <div className="flex items-center justify-between p-4 rounded-xl border border-border/50 bg-muted/5">
+      <div className="flex flex-col gap-2 w-full">
+        <Skeleton className="h-5 w-2/3" />
+        <div className="flex gap-2">
+          <Skeleton className="h-4 w-16" />
+          <Skeleton className="h-4 w-20" />
+        </div>
+      </div>
+      <Skeleton className="h-8 w-24 rounded-lg" />
+    </div>
+  )
+}
 
 export default function Home() {
   const now = new Date();
@@ -24,11 +40,7 @@ export default function Home() {
   }
 
   const totalDuration = 3600 * 8
-  const [dailyQuestions, setDailyQuestions] = useState({
-    easy: { title: "", topics: "", slug: "" },
-    medium: { title: "", topics: "", slug: "" },
-    hard: { title: "", topics: "", slug: "" },
-  });
+  const [dailyQuestions, setDailyQuestions] = useState<DailyQuestions | null>(null);
 
   useEffect(() => {
     fetchDailyQuestions()
@@ -45,105 +57,104 @@ export default function Home() {
           <div className="@container/main flex flex-1 flex-col gap-2 ">
             <div className="flex flex-col gap-4 py-4 md:gap-6 md:py-6">
               <SectionCards />
-              <div className="*:data-[slot=card]:from-primary/5 *:data-[slot=card]:to-card dark:*:data-[slot=card]:bg-card *:data-[slot=card]:bg-gradient-to-t *:data-[slot=card]:shadow-xs @xl/main:grid-cols-2 @5xl/main:grid-cols-4 flex flex-row gap-6 mx-6">
-                
+              <div className="grid grid-cols-1 lg:grid-cols-4 gap-6 px-4 md:px-6">
 
-
-
-                <Card className="@container/card w-[50%] p-12 ">
-                  <div className="text-center mb-6">
-                    <h1 className="text-2xl font-bold text-gray-800 dark:text-gray-200">Curated Problems</h1>
-                    <p className="text-sm text-gray-600 dark:text-gray-400 mt-2">
-                      Complete at least 1 problem to maintain your streak. Refreshes Daily
+                {/* Problems Card */}
+                <Card className="lg:col-span-2 p-8 bg-gradient-to-br from-card to-card/50 border-border/50 shadow-2xl transition-all duration-300 hover:shadow-primary/5 hover:border-primary/20">
+                  <div className="text-center mb-8">
+                    <h1 className="text-3xl font-bold tracking-tight bg-clip-text text-transparent bg-gradient-to-r from-foreground to-foreground/60">Curated Problems</h1>
+                    <p className="text-sm text-muted-foreground mt-2 max-w-md mx-auto">
+                      Complete at least 1 problem to maintain your streak. Refreshes daily at 3:30 PM IST.
                     </p>
                   </div>
-                  {dailyQuestions ? (
-                    <>
-                      <TaskQuestion
-                        title={dailyQuestions.easy.title}
-                        tags={dailyQuestions.easy.topics.split(", ")}
-                        state="unattempted"
-                        difficulty="easy"
-                        slug={dailyQuestions.easy.slug}
-                      />
-                      <TaskQuestion
-                        title={dailyQuestions.medium.title}
-                        tags={dailyQuestions.medium.topics.split(", ")}
-                        state="unattempted"
-                        difficulty="med"
-                        slug={dailyQuestions.medium.slug}
-                      />
-                      <TaskQuestion
-                        title={dailyQuestions.hard.title}
-                        tags={dailyQuestions.hard.topics.split(", ")}
-                        state="unattempted"
-                        difficulty="hard"
-                        slug={dailyQuestions.hard.slug}
-                      />
-                    </>
-                  ) : (
-                    <p>Loading...</p>
-                  )}
+                  <div className="space-y-4">
+                    {dailyQuestions ? (
+                      <>
+                        <TaskQuestion
+                          title={dailyQuestions.easy.title}
+                          tags={dailyQuestions.easy.topics?.split(", ") || []}
+                          state="unattempted"
+                          difficulty="easy"
+                          slug={dailyQuestions.easy.slug}
+                        />
+                        <TaskQuestion
+                          title={dailyQuestions.medium.title}
+                          tags={dailyQuestions.medium.topics?.split(", ") || []}
+                          state="unattempted"
+                          difficulty="med"
+                          slug={dailyQuestions.medium.slug}
+                        />
+                        <TaskQuestion
+                          title={dailyQuestions.hard.title}
+                          tags={dailyQuestions.hard.topics?.split(", ") || []}
+                          state="unattempted"
+                          difficulty="hard"
+                          slug={dailyQuestions.hard.slug}
+                        />
+                      </>
+                    ) : (
+                      <div className="space-y-4">
+                        {[1, 2, 3].map((i) => (
+                          <TaskQuestionSkeleton key={i} />
+                        ))}
+                      </div>
+                    )}
+                  </div>
                 </Card>
-                <div className="*:data-[slot=card]:from-primary/5 *:data-[slot=card]:to-card dark:*:data-[slot=card]:bg-card *:data-[slot=card]:bg-gradient-to-t *:data-[slot=card]:shadow-xs @xl/main:grid-cols-2 @5xl/main:grid-cols-4 flex flex-col w-[50%] gap-6">
-                  <Card className="@container/card flex-1 p-6 ">
 
-                    <div className="grid grid-cols-1">
-
-                      <div className="flex flex-row text-center justify-center items-center">
-
-                        <CardContent className="p-0">
-                          <SimpleTimer
-                            totalDuration={totalDuration}
-                            initialRemainingTime={remainingTimeInSeconds}
-                            onComplete={() => console.log("Timer done")}
-                          />
-                        </CardContent>
-                      </div>
-
-                    </div>
-
-
+                <div className="lg:col-span-2 flex flex-col gap-6">
+                  {/* Timer Card */}
+                  <Card className="flex-1 p-8 bg-gradient-to-br from-card to-card/50 border-border/50 shadow-xl flex items-center justify-center relative overflow-hidden group">
+                    <div className="absolute inset-0 bg-primary/5 opacity-0 group-hover:opacity-100 transition-opacity pointer-events-none" />
+                    <CardContent className="p-0 relative z-10 w-full">
+                      <SimpleTimer
+                        totalDuration={totalDuration}
+                        initialRemainingTime={remainingTimeInSeconds}
+                        onComplete={() => console.log("Timer done")}
+                      />
+                    </CardContent>
                   </Card>
-                  <Card className="@container/card flex-1 p-6 ">
 
-
+                  {/* Actions Card */}
+                  <Card className="flex-1 p-8 bg-gradient-to-br from-card to-card/50 border-border/50 shadow-xl">
                     <CardContent className="p-0">
-                      <div className="flex justify-between items-center mb-4">
+                      <div className="flex justify-between items-center mb-6">
                         <div>
-                          <h2 className="text-lg font-semibold text-gray-800 dark:text-gray-200">Task Progress</h2>
-                          <p className="text-sm text-gray-600 dark:text-gray-400">1 of 3 tasks completed</p>
+                          <h2 className="text-xl font-bold tracking-tight">Daily Progress</h2>
+                          <p className="text-sm text-muted-foreground">1 of 3 tasks completed</p>
                         </div>
-                        <Progress value={(1 / 3) * 100} className="h-4 bg-gray-600 w-1/2" />
+                        <div className="w-1/2">
+                          <Progress value={(1 / 3) * 100} className="h-2 bg-muted/20" />
+                          <div className="flex justify-between mt-1.5">
+                            <span className="text-[10px] uppercase font-bold text-muted-foreground">Focus</span>
+                            <span className="text-[10px] uppercase font-bold text-primary">33%</span>
+                          </div>
+                        </div>
                       </div>
-                      <div className="flex justify-center gap-4 mt-4">
+                      <div className="grid grid-cols-3 gap-3">
                         <button
-                          className="p-6 flex flex-col items-center justify-center rounded-md hover:outline-gray-300 dark:hover:border-white/30 border cursor-pointer text-white"
-                          aria-label="Refresh"
+                          className="flex flex-col items-center justify-center p-4 rounded-xl border border-border/50 bg-muted/10 hover:bg-muted/20 hover:border-border transition-all group"
                           onClick={() => console.log("Refresh clicked")}
                         >
-                          <RefreshCcw size={28} className="mb-1" />
-                          <span className="text-sm text-white mt-1">Refresh Stats</span>
+                          <RefreshCcw size={24} className="mb-2 text-muted-foreground group-hover:text-primary transition-colors" />
+                          <span className="text-[10px] uppercase font-black tracking-widest">Sync</span>
                         </button>
                         <button
-                          className="p-6 flex flex-col items-center justify-center rounded-md hover:outline-gray-300 dark:hover:border-white/30 border cursor-pointer text-white"
-                          aria-label="Refresh"
-                          onClick={() => console.log("Refresh clicked")}
+                          className="flex flex-col items-center justify-center p-4 rounded-xl border border-primary/20 bg-primary/5 hover:bg-primary/20 hover:border-primary/40 transition-all group shadow-lg shadow-primary/5"
+                          onClick={() => window.location.href = "/store"}
                         >
-                          <FaFire size={28} className="mb-1" />
-                          <span className="text-sm text-white mt-1">Use Powerups</span>
+                          <FaFire size={24} className="mb-2 text-primary group-hover:scale-110 transition-transform" />
+                          <span className="text-[10px] uppercase font-black tracking-widest text-primary">Store</span>
                         </button>
                         <button
-                          className="p-6 flex flex-col items-center justify-center rounded-md dark:hover:border-white/30 border cursor-pointer text-white"
-                          aria-label="Refresh"
-                          onClick={() => console.log("Refresh clicked")}
+                          className="flex flex-col items-center justify-center p-4 rounded-xl border border-border/50 bg-muted/10 hover:bg-muted/20 hover:border-border transition-all group"
+                          onClick={() => console.log("Calendar clicked")}
                         >
-                          <Calendar size={28} className="mb-1" />
-                          <span className="text-sm text-white mt-1">Daily Challenge</span>
+                          <Calendar size={24} className="mb-2 text-muted-foreground group-hover:text-foreground transition-colors" />
+                          <span className="text-[10px] uppercase font-black tracking-widest">Log</span>
                         </button>
                       </div>
                     </CardContent>
-
                   </Card>
                 </div>
 

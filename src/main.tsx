@@ -7,8 +7,15 @@ import { LoginForm } from './components/login-form.tsx';
 
 import { Suspense, lazy } from 'react';
 
+import { LoadingScreen } from './components/loading-screen.tsx';
+
 const Home = lazy(() => import('./app/dashboard/home.tsx'));
 const Settings = lazy(() => import('./app/dashboard/settings.tsx'));
+const Analytics = lazy(() => import('./app/dashboard/analytics.tsx'));
+const Store = lazy(() => import('./app/dashboard/store.tsx'));
+const RiskParameters = lazy(() => import('./app/dashboard/risk-parameters.tsx'));
+const Help = lazy(() => import('./app/dashboard/help'));
+const Integrations = lazy(() => import('./app/dashboard/integrations.tsx'));
 
 
 createRoot(document.getElementById('root')!).render(
@@ -19,21 +26,38 @@ createRoot(document.getElementById('root')!).render(
         <Routes>
           <Route path="/" element={<LoginForm />} />
           <Route path="/dashboard" element={
-            <Suspense fallback={<div className="flex-col gap-4 w-full flex items-center justify-center">
-              <div
-                className="w-20 h-20 border-4 border-transparent text-blue-400 text-4xl animate-spin flex items-center justify-center border-t-blue-400 rounded-full"
-              >
-                <div
-                  className="w-16 h-16 border-4 border-transparent text-red-400 text-2xl animate-spin flex items-center justify-center border-t-red-400 rounded-full"
-                ></div>
-              </div>
-            </div>}>
+            <Suspense fallback={<LoadingScreen />}>
               <Home />
             </Suspense>
           } />
           <Route path="/settings" element={
-            <Suspense fallback={<div>Loading...</div>}>
+            <Suspense fallback={<LoadingScreen />}>
               <Settings />
+            </Suspense>
+          } />
+          <Route path="/analytics" element={
+            <Suspense fallback={<LoadingScreen />}>
+              <Analytics />
+            </Suspense>
+          } />
+          <Route path="/store" element={
+            <Suspense fallback={<LoadingScreen />}>
+              <Store />
+            </Suspense>
+          } />
+          <Route path="/stakes" element={
+            <Suspense fallback={<LoadingScreen />}>
+              <RiskParameters />
+            </Suspense>
+          } />
+          <Route path="/help" element={
+            <Suspense fallback={<LoadingScreen />}>
+              <Help />
+            </Suspense>
+          } />
+          <Route path="/integrations" element={
+            <Suspense fallback={<LoadingScreen />}>
+              <Integrations />
             </Suspense>
           } />
         </Routes>

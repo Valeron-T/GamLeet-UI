@@ -1,7 +1,7 @@
 import { AppSidebar } from "@/components/app-sidebar.tsx"
 import { SiteHeader } from "@/components/site-header.tsx"
 import { SidebarInset, SidebarProvider } from "@/components/ui/sidebar.tsx"
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import { Label } from "@/components/ui/label"
 import { Switch } from "@/components/ui/switch"
 import { useTheme } from "@/components/theme-provider"
