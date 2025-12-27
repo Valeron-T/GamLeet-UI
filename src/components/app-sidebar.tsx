@@ -11,6 +11,8 @@ import {
   IconSettings,
   IconBuildingStore,
 } from "@tabler/icons-react"
+import { useEffect, useState } from "react"
+import { fetchUserStats } from "@/api/dashboard"
 
 import { NavDocuments } from "@/components/nav-documents.tsx"
 import { NavMain } from "@/components/nav-main.tsx"
@@ -95,6 +97,30 @@ const data = {
 }
 
 export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
+  const [user, setUser] = useState({
+    name: "Loading...",
+    email: "...",
+    avatar: "/avatars/shadcn.jpg",
+  })
+
+  useEffect(() => {
+    async function loadUser() {
+      try {
+        const stats = await fetchUserStats()
+        if (stats.name || stats.email) {
+          setUser({
+            name: stats.name || "User",
+            email: stats.email || "",
+            avatar: "", // Rely on initials fallback
+          })
+        }
+      } catch (error) {
+        console.error("Failed to load user for sidebar:", error)
+      }
+    }
+    loadUser()
+  }, [])
+
   return (
     <Sidebar collapsible="offcanvas" {...props}>
       <SidebarHeader>
@@ -118,7 +144,7 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
         <NavSecondary items={data.navSecondary} className="mt-auto" />
       </SidebarContent>
       <SidebarFooter>
-        <NavUser user={data.user} />
+        <NavUser user={user} />
       </SidebarFooter>
     </Sidebar>
   )

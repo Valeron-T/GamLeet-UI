@@ -33,3 +33,39 @@ export async function fetchDailyQuestions() {
 export async function fetchUserStats() {
   return apiFetch("/user/stats");
 }
+
+export async function fetchUserMargins() {
+  return apiFetch("/user/margins");
+}
+
+export async function syncUserProgress() {
+  const response = await fetch(`${BASE_API}/user/sync`, {
+    method: "POST",
+    headers: DEFAULT_HEADERS,
+    credentials: "include",
+  });
+
+  if (!response.ok) {
+    throw new Error(`HTTP ${response.status}`);
+  }
+
+  return response.json();
+}
+
+export async function updateDifficulty(difficulty_mode: string) {
+  const response = await fetch(`${BASE_API}/user/difficulty`, {
+    method: "POST",
+    headers: {
+      ...DEFAULT_HEADERS,
+      "Content-Type": "application/json",
+    },
+    credentials: "include",
+    body: JSON.stringify({ difficulty_mode }),
+  });
+
+  if (!response.ok) {
+    throw new Error(`HTTP ${response.status}`);
+  }
+
+  return response.json();
+}

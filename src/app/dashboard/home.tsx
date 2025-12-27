@@ -11,8 +11,9 @@ import { Progress } from "@/components/ui/progress";
 import { Calendar, RefreshCcw } from "lucide-react"
 import { FaFire } from "react-icons/fa";
 import { useEffect, useState } from "react";
-import { fetchDailyQuestions, DailyQuestions } from "@/api/dashboard";
+import { fetchDailyQuestions, DailyQuestions, fetchUserStats, syncUserProgress } from "@/api/dashboard";
 import { Skeleton } from "@/components/ui/skeleton.tsx";
+import { toast } from "sonner";
 
 function TaskQuestionSkeleton() {
   return (
@@ -41,12 +42,37 @@ export default function Home() {
 
   const totalDuration = 3600 * 8
   const [dailyQuestions, setDailyQuestions] = useState<DailyQuestions | null>(null);
+  const [stats, setStats] = useState<any>(null);
+  const [syncing, setSyncing] = useState(false);
 
   useEffect(() => {
-    fetchDailyQuestions()
-      .then(setDailyQuestions)
-      .catch(console.error);
+    Promise.all([
+      fetchDailyQuestions(),
+      fetchUserStats()
+    ]).then(([questions, userStats]) => {
+      setDailyQuestions(questions);
+      setStats(userStats);
+    }).catch(console.error);
   }, []);
+
+  const handleSync = async () => {
+    setSyncing(true);
+    try {
+      const newStats = await syncUserProgress();
+      setStats(newStats);
+      toast.success("Progress synchronized with LeetCode!");
+    } catch (error) {
+      console.error("Sync failed:", error);
+      toast.error("Failed to sync with LeetCode. Try again later.");
+    } finally {
+      setSyncing(false);
+    }
+  };
+
+  // Logic for progress bar: 
+  const solvedToday = stats?.last_activity_date === new Date().toISOString().split('T')[0];
+  const progressValue = solvedToday ? 100 : 0;
+  const progressText = solvedToday ? "1 of 1 Daily Challenge Completed" : "0 of 1 Daily Challenge Completed";
 
   return (
     <SidebarProvider>
@@ -121,23 +147,24 @@ export default function Home() {
                       <div className="flex justify-between items-center mb-6">
                         <div>
                           <h2 className="text-xl font-bold tracking-tight">Daily Progress</h2>
-                          <p className="text-sm text-muted-foreground">1 of 3 tasks completed</p>
+                          <p className="text-sm text-muted-foreground">{progressText}</p>
                         </div>
                         <div className="w-1/2">
-                          <Progress value={(1 / 3) * 100} className="h-2 bg-muted/20" />
+                          <Progress value={progressValue} className="h-2 bg-muted/20" />
                           <div className="flex justify-between mt-1.5">
                             <span className="text-[10px] uppercase font-bold text-muted-foreground">Focus</span>
-                            <span className="text-[10px] uppercase font-bold text-primary">33%</span>
+                            <span className="text-[10px] uppercase font-bold text-primary">{progressValue}%</span>
                           </div>
                         </div>
                       </div>
                       <div className="grid grid-cols-3 gap-3">
                         <button
-                          className="flex flex-col items-center justify-center p-4 rounded-xl border border-border/50 bg-muted/10 hover:bg-muted/20 hover:border-border transition-all group"
-                          onClick={() => console.log("Refresh clicked")}
+                          className={`flex flex-col items-center justify-center p-4 rounded-xl border border-border/50 bg-muted/10 hover:bg-muted/20 hover:border-border transition-all group ${syncing ? 'opacity-50 cursor-not-allowed' : ''}`}
+                          onClick={handleSync}
+                          disabled={syncing}
                         >
-                          <RefreshCcw size={24} className="mb-2 text-muted-foreground group-hover:text-primary transition-colors" />
-                          <span className="text-[10px] uppercase font-black tracking-widest">Sync</span>
+                          <RefreshCcw size={24} className={`mb-2 text-muted-foreground group-hover:text-primary transition-colors ${syncing ? 'animate-spin' : ''}`} />
+                          <span className="text-[10px] uppercase font-black tracking-widest">{syncing ? 'Wait' : 'Sync'}</span>
                         </button>
                         <button
                           className="flex flex-col items-center justify-center p-4 rounded-xl border border-primary/20 bg-primary/5 hover:bg-primary/20 hover:border-primary/40 transition-all group shadow-lg shadow-primary/5"
