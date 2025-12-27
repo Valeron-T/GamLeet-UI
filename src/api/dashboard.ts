@@ -6,9 +6,9 @@ const DEFAULT_HEADERS = {
 };
 
 export interface DailyQuestions {
-  easy: { title: string; topics: string; slug: string };
-  medium: { title: string; topics: string; slug: string };
-  hard: { title: string; topics: string; slug: string };
+  easy: { title: string; topics: string; slug: string; status: "unattempted" | "attempted" | "completed" };
+  medium: { title: string; topics: string; slug: string; status: "unattempted" | "attempted" | "completed" };
+  hard: { title: string; topics: string; slug: string; status: "unattempted" | "attempted" | "completed" };
 }
 
 async function apiFetch(path: string) {
@@ -75,6 +75,50 @@ export async function disconnectZerodha() {
     method: "POST",
     headers: DEFAULT_HEADERS,
     credentials: "include",
+  });
+
+  if (!response.ok) {
+    throw new Error(`HTTP ${response.status}`);
+  }
+
+  return response.json();
+}
+
+export interface InventoryItem {
+  item_id: string;
+  quantity: number;
+  acquired_at?: string;
+}
+
+export interface Achievement {
+  id: string;
+  name: string;
+  description: string;
+  icon: string;
+  rarity: "common" | "rare" | "epic" | "legendary";
+  unlocked: boolean;
+  unlocked_at?: string;
+  progress?: number;
+  target?: number;
+}
+
+export async function fetchUserInventory(): Promise<{ items: InventoryItem[] }> {
+  return apiFetch("/user/inventory");
+}
+
+export async function fetchUserAchievements(): Promise<{ achievements: Achievement[] }> {
+  return apiFetch("/user/achievements");
+}
+
+export async function updateLeetCodeCredentials(username: string, session: string) {
+  const response = await fetch(`${BASE_API}/user/leetcode`, {
+    method: "POST",
+    headers: {
+      ...DEFAULT_HEADERS,
+      "Content-Type": "application/json",
+    },
+    credentials: "include",
+    body: JSON.stringify({ username, session }),
   });
 
   if (!response.ok) {

@@ -2,24 +2,11 @@ import { Button } from "@/components/ui/button.tsx"
 import { Separator } from "@/components/ui/separator.tsx"
 import { SidebarTrigger } from "@/components/ui/sidebar.tsx"
 import { RiCopperCoinFill } from "react-icons/ri"
-import { useEffect, useState } from "react"
-import { fetchUserStats } from "@/api/dashboard"
+import { useStats } from "@/contexts/StatsContext"
 import { Progress } from "@/components/ui/progress"
 
-interface UserStats {
-  gamcoins: number
-  problems_solved: number
-  total_xp: number
-}
-
 export function SiteHeader() {
-  const [stats, setStats] = useState<UserStats | null>(null)
-
-  useEffect(() => {
-    fetchUserStats()
-      .then(setStats)
-      .catch(console.error)
-  }, [])
+  const { stats } = useStats()
 
   const XP_PER_LEVEL = 100
   const level = stats ? Math.floor(stats.total_xp / XP_PER_LEVEL) + 1 : 1

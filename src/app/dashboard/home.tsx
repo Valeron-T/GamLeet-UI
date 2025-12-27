@@ -11,9 +11,10 @@ import { Progress } from "@/components/ui/progress";
 import { Calendar, RefreshCcw } from "lucide-react"
 import { FaFire } from "react-icons/fa";
 import { useEffect, useState } from "react";
-import { fetchDailyQuestions, DailyQuestions, fetchUserStats, syncUserProgress } from "@/api/dashboard";
+import { fetchDailyQuestions, DailyQuestions, syncUserProgress } from "@/api/dashboard";
 import { Skeleton } from "@/components/ui/skeleton.tsx";
 import { toast } from "sonner";
+import { useStats } from "@/contexts/StatsContext";
 
 function TaskQuestionSkeleton() {
   return (
@@ -40,26 +41,26 @@ export default function Home() {
     remainingTimeInSeconds += 24 * 60 * 60; // Add 24 hours if the target time is for the next day
   }
 
+  const { stats, refreshStats } = useStats()
   const totalDuration = 3600 * 8
   const [dailyQuestions, setDailyQuestions] = useState<DailyQuestions | null>(null);
-  const [stats, setStats] = useState<any>(null);
   const [syncing, setSyncing] = useState(false);
 
   useEffect(() => {
-    Promise.all([
-      fetchDailyQuestions(),
-      fetchUserStats()
-    ]).then(([questions, userStats]) => {
-      setDailyQuestions(questions);
-      setStats(userStats);
-    }).catch(console.error);
+    fetchDailyQuestions()
+      .then(setDailyQuestions)
+      .catch(console.error);
   }, []);
 
   const handleSync = async () => {
     setSyncing(true);
     try {
-      const newStats = await syncUserProgress();
-      setStats(newStats);
+      await syncUserProgress();
+      const [, newQuestions] = await Promise.all([
+        refreshStats(),
+        fetchDailyQuestions()
+      ]);
+      setDailyQuestions(newQuestions);
       toast.success("Progress synchronized with LeetCode!");
     } catch (error) {
       console.error("Sync failed:", error);
@@ -99,21 +100,21 @@ export default function Home() {
                         <TaskQuestion
                           title={dailyQuestions.easy.title}
                           tags={dailyQuestions.easy.topics?.split(", ") || []}
-                          state="unattempted"
+                          state={dailyQuestions.easy.status}
                           difficulty="easy"
                           slug={dailyQuestions.easy.slug}
                         />
                         <TaskQuestion
                           title={dailyQuestions.medium.title}
                           tags={dailyQuestions.medium.topics?.split(", ") || []}
-                          state="unattempted"
+                          state={dailyQuestions.medium.status}
                           difficulty="med"
                           slug={dailyQuestions.medium.slug}
                         />
                         <TaskQuestion
                           title={dailyQuestions.hard.title}
                           tags={dailyQuestions.hard.topics?.split(", ") || []}
-                          state="unattempted"
+                          state={dailyQuestions.hard.status}
                           difficulty="hard"
                           slug={dailyQuestions.hard.slug}
                         />

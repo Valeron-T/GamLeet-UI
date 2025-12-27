@@ -7,6 +7,11 @@ import { Button } from "@/components/ui/button"
 import { Switch } from "@/components/ui/switch"
 import { Separator } from "@/components/ui/separator"
 import { IconMail, IconBrandDiscord, IconBrandSlack, IconBrandWhatsapp, IconPlug, IconSettings, IconShieldCheck, IconCode, IconBrandLeetcode } from "@tabler/icons-react"
+import { useStats } from "@/contexts/StatsContext.tsx"
+import { useState } from "react"
+import { LeetCodeModal } from "@/components/LeetCodeModal.tsx"
+import { syncUserProgress } from "@/api/dashboard"
+import { toast } from "sonner"
 
 const communicationIntegrations = [
     {
@@ -47,19 +52,24 @@ const communicationIntegrations = [
     }
 ];
 
-const codePlatformIntegrations = [
-    {
-        id: "leetcode",
-        name: "LeetCode",
-        description: "Core problem tracking system.",
-        icon: <IconBrandLeetcode className="text-amber-500" size={24} />,
-        status: "connected",
-        type: "Source",
-        details: "Syncs your daily solves and contest performance directly from your profile."
-    }
-];
-
 export default function Integrations() {
+    const { stats, refreshStats } = useStats();
+    const [isLeetCodeModalOpen, setIsLeetCodeModalOpen] = useState(false);
+
+    const leetcodeStatus = stats?.leetcode_connected ? "connected" : "disconnected";
+
+    const codePlatformIntegrations = [
+        {
+            id: "leetcode",
+            name: "LeetCode",
+            description: stats?.leetcode_username || "Core problem tracking system.",
+            icon: <IconBrandLeetcode className="text-amber-500" size={24} />,
+            status: leetcodeStatus,
+            type: "Source",
+            details: "Syncs your daily solves and contest performance directly from your profile."
+        }
+    ];
+
     return (
         <SidebarProvider>
             <AppSidebar variant="inset" />
@@ -99,10 +109,25 @@ export default function Integrations() {
                         </div>
                         <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                             {codePlatformIntegrations.map((item) => (
-                                <IntegrationCard key={item.id} item={item} />
+                                <IntegrationCard
+                                    key={item.id}
+                                    item={item}
+                                    onConfigure={() => {
+                                        if (item.id === "leetcode") setIsLeetCodeModalOpen(true);
+                                    }}
+                                />
                             ))}
                         </div>
                     </div>
+
+                    <LeetCodeModal
+                        isOpen={isLeetCodeModalOpen}
+                        onClose={() => setIsLeetCodeModalOpen(false)}
+                        onSuccess={() => {
+                            refreshStats();
+                        }}
+                        currentUsername={stats?.leetcode_username}
+                    />
 
                     <div className="mt-8 p-10 rounded-[2.5rem] bg-gradient-to-br from-primary/10 via-background to-secondary/10 border border-primary/10 flex flex-col items-center text-center gap-4 relative overflow-hidden group">
                         <div className="absolute inset-0 bg-primary/5 opacity-0 group-hover:opacity-100 transition-opacity" />
@@ -123,7 +148,9 @@ export default function Integrations() {
     )
 }
 
-function IntegrationCard({ item }: { item: any }) {
+function IntegrationCard({ item, onConfigure }: { item: any, onConfigure?: () => void }) {
+    const [isSyncing, setIsSyncing] = useState(false);
+
     return (
         <Card className="group relative overflow-hidden border-border/50 bg-card/50 transition-all hover:border-primary/30">
             <CardHeader className="flex flex-row items-center gap-4 pb-2">
@@ -153,11 +180,47 @@ function IntegrationCard({ item }: { item: any }) {
                             <span className="text-xs font-bold text-emerald-500 tracking-wider uppercase">Active Connection</span>
                         </div>
                         <div className="flex items-center gap-2">
-                            <Button variant="ghost" size="icon" className="h-8 w-8 rounded-lg">
+                            <Button
+                                variant="ghost"
+                                size="icon"
+                                className="h-8 w-8 rounded-lg"
+                                onClick={onConfigure}
+                            >
                                 <IconSettings size={16} />
                             </Button>
-                            <Switch checked={true} />
+                            <Switch
+                                checked={true}
+                                disabled={isSyncing}
+                                onCheckedChange={async (checked) => {
+                                    if (checked) {
+                                        setIsSyncing(true);
+                                        try {
+                                            await syncUserProgress();
+                                            toast.success("Progress synced successfully");
+                                        } catch (e) {
+                                            toast.error("Manual sync failed");
+                                        } finally {
+                                            setIsSyncing(false);
+                                        }
+                                    }
+                                }}
+                            />
                         </div>
+                    </>
+                ) : item.status === "disconnected" ? (
+                    <>
+                        <div className="flex items-center gap-2">
+                            <div className="h-2 w-2 rounded-full bg-amber-500" />
+                            <span className="text-xs font-bold text-amber-500 tracking-wider uppercase">Not Linked</span>
+                        </div>
+                        <Button
+                            variant="outline"
+                            size="sm"
+                            className="h-8 text-[10px] font-black uppercase tracking-widest"
+                            onClick={onConfigure}
+                        >
+                            Configure
+                        </Button>
                     </>
                 ) : (
                     <>

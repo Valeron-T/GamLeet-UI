@@ -10,9 +10,9 @@ import {
   IconSearch,
   IconSettings,
   IconBuildingStore,
+  IconBackpack,
 } from "@tabler/icons-react"
-import { useEffect, useState } from "react"
-import { fetchUserStats } from "@/api/dashboard"
+import { useStats } from "@/contexts/StatsContext"
 
 import { NavDocuments } from "@/components/nav-documents.tsx"
 import { NavMain } from "@/components/nav-main.tsx"
@@ -59,6 +59,11 @@ const data = {
       url: "/integrations",
       icon: IconPlug,
     },
+    {
+      title: "Inventory",
+      url: "/inventory",
+      icon: IconBackpack,
+    },
   ],
   navSecondary: [
     {
@@ -92,29 +97,22 @@ const data = {
 }
 
 export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
-  const [user, setUser] = useState({
+  const { stats } = useStats()
+  const [user, setUser] = React.useState({
     name: "Loading...",
     email: "...",
     avatar: "/avatars/shadcn.jpg",
   })
 
-  useEffect(() => {
-    async function loadUser() {
-      try {
-        const stats = await fetchUserStats()
-        if (stats.name || stats.email) {
-          setUser({
-            name: stats.name || "User",
-            email: stats.email || "",
-            avatar: "", // Rely on initials fallback
-          })
-        }
-      } catch (error) {
-        console.error("Failed to load user for sidebar:", error)
-      }
+  React.useEffect(() => {
+    if (stats) {
+      setUser({
+        name: stats.name || "User",
+        email: stats.email || "",
+        avatar: "", // Rely on initials fallback
+      })
     }
-    loadUser()
-  }, [])
+  }, [stats])
 
   return (
     <Sidebar collapsible="offcanvas" {...props}>

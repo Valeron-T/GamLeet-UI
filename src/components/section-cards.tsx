@@ -1,6 +1,5 @@
 import { IconTrendingUp } from "@tabler/icons-react"
-import { useEffect, useState } from "react"
-import { fetchUserStats } from "@/api/dashboard"
+import { useStats } from "@/contexts/StatsContext"
 import {
   Card,
   CardDescription,
@@ -10,15 +9,6 @@ import {
 } from "@/components/ui/card.tsx"
 
 import { Skeleton } from "@/components/ui/skeleton.tsx"
-
-interface UserStats {
-  lifetime_loss: number
-  available_balance: number
-  current_streak: number
-  problems_solved: number
-  gamcoins: number
-  total_xp: number
-}
 
 function SectionCardSkeleton() {
   return (
@@ -36,15 +26,7 @@ function SectionCardSkeleton() {
 }
 
 export function SectionCards() {
-  const [stats, setStats] = useState<UserStats | null>(null)
-  const [loading, setLoading] = useState(true)
-
-  useEffect(() => {
-    fetchUserStats()
-      .then(setStats)
-      .catch(console.error)
-      .finally(() => setLoading(false))
-  }, [])
+  const { stats, loading } = useStats()
 
   const lifetime_loss_statements: Record<number, { main: string; sub: string }> = {
     0: {

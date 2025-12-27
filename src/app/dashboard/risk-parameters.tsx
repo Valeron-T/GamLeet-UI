@@ -7,8 +7,9 @@ import { Badge } from "@/components/ui/badge"
 import { Check, ShieldAlert, Zap, TrendingUp, ExternalLink, Heart, Sparkles, Flame } from "lucide-react"
 import { Progress } from "@/components/ui/progress"
 import { useState, useEffect } from "react"
-import { fetchUserMargins, fetchUserStats, updateDifficulty } from "@/api/dashboard"
+import { fetchUserMargins, updateDifficulty } from "@/api/dashboard"
 import { toast } from "sonner"
+import { useStats } from "@/contexts/StatsContext"
 
 const pennyStocks = [
     { ticker: "SUZELON", name: "Suzlon Energy", price: "Rs 42.50", volatility: "High" },
@@ -20,38 +21,35 @@ const pennyStocks = [
 ];
 
 export default function RiskParameters() {
+    const { stats, refreshStats } = useStats()
     const [difficulty, setDifficulty] = useState("");
     const [selectedStock, setSelectedStock] = useState("SUZELON");
     const [margins, setMargins] = useState<any>(null);
-    const [stats, setStats] = useState<any>(null);
     const [loading, setLoading] = useState(true);
     const [saving, setSaving] = useState(false);
 
     useEffect(() => {
         async function loadInitialData() {
             try {
-                const [marginData, statsData] = await Promise.all([
-                    fetchUserMargins(),
-                    fetchUserStats()
-                ]);
+                const marginData = await fetchUserMargins();
                 setMargins(marginData);
-                setStats(statsData);
-                if (statsData.difficulty_mode) {
-                    setDifficulty(statsData.difficulty_mode);
+                if (stats?.difficulty_mode) {
+                    setDifficulty(stats.difficulty_mode);
                 }
             } catch (error) {
-                console.error("Failed to fetch initial data:", error);
+                console.error("Failed to fetch margins:", error);
             } finally {
                 setLoading(false);
             }
         }
         loadInitialData();
-    }, []);
+    }, [stats]);
 
     const handleSave = async () => {
         setSaving(true);
         try {
             await updateDifficulty(difficulty);
+            await refreshStats();
             toast.success("Accountability settings updated!");
         } catch (error) {
             console.error("Failed to update difficulty:", error);
