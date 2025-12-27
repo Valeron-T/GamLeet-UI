@@ -11,6 +11,7 @@ import {
   IconSettings,
   IconBuildingStore,
   IconBackpack,
+  IconTrophy,
 } from "@tabler/icons-react"
 import { useStats } from "@/contexts/StatsContext"
 
@@ -38,6 +39,11 @@ const data = {
       title: "Dashboard",
       url: "/dashboard",
       icon: IconDashboard,
+    },
+    {
+      title: "Leaderboard",
+      url: "/leaderboard",
+      icon: IconTrophy,
     },
     {
       title: "Analytics",

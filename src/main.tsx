@@ -18,6 +18,7 @@ const RiskParameters = lazy(() => import('./app/dashboard/risk-parameters.tsx'))
 const Help = lazy(() => import('./app/dashboard/help'));
 const Integrations = lazy(() => import('./app/dashboard/integrations.tsx'));
 const Inventory = lazy(() => import('./app/dashboard/inventory.tsx'));
+const Leaderboard = lazy(() => import('./app/dashboard/leaderboard.tsx'));
 
 
 createRoot(document.getElementById('root')!).render(
@@ -66,6 +67,11 @@ createRoot(document.getElementById('root')!).render(
             <Route path="/inventory" element={
               <Suspense fallback={<LoadingScreen />}>
                 <Inventory />
+              </Suspense>
+            } />
+            <Route path="/leaderboard" element={
+              <Suspense fallback={<LoadingScreen />}>
+                <Leaderboard />
               </Suspense>
             } />
           </Routes>
