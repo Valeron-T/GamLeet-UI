@@ -20,7 +20,7 @@ const pennyStocks = [
 ];
 
 export default function RiskParameters() {
-    const [difficulty, setDifficulty] = useState("normal");
+    const [difficulty, setDifficulty] = useState("");
     const [selectedStock, setSelectedStock] = useState("SUZELON");
     const [margins, setMargins] = useState<any>(null);
     const [stats, setStats] = useState<any>(null);

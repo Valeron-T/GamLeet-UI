@@ -69,3 +69,17 @@ export async function updateDifficulty(difficulty_mode: string) {
 
   return response.json();
 }
+
+export async function disconnectZerodha() {
+  const response = await fetch(`${BASE_API}/user/disconnect-zerodha`, {
+    method: "POST",
+    headers: DEFAULT_HEADERS,
+    credentials: "include",
+  });
+
+  if (!response.ok) {
+    throw new Error(`HTTP ${response.status}`);
+  }
+
+  return response.json();
+}

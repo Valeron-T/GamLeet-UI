@@ -5,6 +5,10 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import { Label } from "@/components/ui/label"
 import { Switch } from "@/components/ui/switch"
 import { useTheme } from "@/components/theme-provider"
+import { Button } from "@/components/ui/button"
+import { disconnectZerodha } from "@/api/dashboard"
+import { toast } from "sonner"
+import { AlertTriangle, Trash2 } from "lucide-react"
 import { useEffect, useState } from "react"
 
 export default function Settings() {
@@ -84,6 +88,41 @@ export default function Settings() {
                                         checked={isPrivateMode}
                                         onCheckedChange={setIsPrivateMode}
                                     />
+                                </div>
+                            </CardContent>
+                        </Card>
+
+                        <Card className="border-destructive/20 bg-destructive/5 backdrop-blur-sm">
+                            <CardHeader>
+                                <div className="flex items-center gap-2 text-destructive">
+                                    <AlertTriangle className="size-5" />
+                                    <CardTitle className="text-lg">Danger Zone</CardTitle>
+                                </div>
+                            </CardHeader>
+                            <CardContent className="space-y-6">
+                                <div className="flex items-center justify-between">
+                                    <div className="space-y-0.5">
+                                        <Label className="text-base text-destructive font-bold">Disconnect Zerodha</Label>
+                                        <p className="text-sm text-muted-foreground">
+                                            Instantly removes all linked account data. This action cannot be undone.
+                                        </p>
+                                    </div>
+                                    <Button
+                                        variant="destructive"
+                                        onClick={async () => {
+                                            try {
+                                                await disconnectZerodha()
+                                                toast.success("Unified account disconnected.")
+                                                window.location.reload()
+                                            } catch (e) {
+                                                toast.error("Failed to disconnect.")
+                                            }
+                                        }}
+                                        className="gap-2 font-bold"
+                                    >
+                                        <Trash2 size={16} />
+                                        Disconnect Instantly
+                                    </Button>
                                 </div>
                             </CardContent>
                         </Card>
