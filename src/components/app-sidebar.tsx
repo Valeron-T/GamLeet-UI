@@ -2,22 +2,17 @@ import * as React from "react"
 import {
   IconChartBar,
   IconDashboard,
-  IconDatabase,
-  IconFileWord,
-  IconHelp,
-  IconPlug,
-  IconReport,
-  IconSearch,
   IconSettings,
   IconBuildingStore,
   IconBackpack,
   IconTrophy,
+  IconTarget,
+  IconPlug,
+  IconHelp,
 } from "@tabler/icons-react"
 import { useStats } from "@/contexts/StatsContext"
 
-import { NavDocuments } from "@/components/nav-documents.tsx"
 import { NavMain } from "@/components/nav-main.tsx"
-import { NavSecondary } from "@/components/nav-secondary.tsx"
 import { NavUser } from "@/components/nav-user.tsx"
 import {
   Sidebar,
@@ -29,12 +24,7 @@ import {
 } from "@/components/ui/sidebar.tsx"
 
 const data = {
-  user: {
-    name: "shadcn",
-    email: "m@example.com",
-    avatar: "/avatars/shadcn.jpg",
-  },
-  navMain: [
+  navOverview: [
     {
       title: "Dashboard",
       url: "/dashboard",
@@ -50,10 +40,12 @@ const data = {
       url: "/analytics",
       icon: IconChartBar,
     },
+  ],
+  navArsenal: [
     {
       title: "Stakes",
       url: "/stakes",
-      icon: IconReport,
+      icon: IconTarget,
     },
     {
       title: "Powerup Store",
@@ -61,17 +53,17 @@ const data = {
       icon: IconBuildingStore,
     },
     {
-      title: "Integrations",
-      url: "/integrations",
-      icon: IconPlug,
-    },
-    {
       title: "Inventory",
       url: "/inventory",
       icon: IconBackpack,
     },
   ],
-  navSecondary: [
+  navSystem: [
+    {
+      title: "Integrations",
+      url: "/integrations",
+      icon: IconPlug,
+    },
     {
       title: "Settings",
       url: "/settings",
@@ -81,23 +73,6 @@ const data = {
       title: "Get Help",
       url: "/help",
       icon: IconHelp,
-    },
-  ],
-  documents: [
-    {
-      name: "Data Library",
-      url: "#",
-      icon: IconDatabase,
-    },
-    {
-      name: "Reports",
-      url: "#",
-      icon: IconReport,
-    },
-    {
-      name: "Word Assistant",
-      url: "#",
-      icon: IconFileWord,
     },
   ],
 }
@@ -138,9 +113,9 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
         </SidebarMenu>
       </SidebarHeader>
       <SidebarContent>
-        <NavMain items={data.navMain} />
-        <NavDocuments items={data.documents} />
-        <NavSecondary items={data.navSecondary} className="mt-auto" />
+        <NavMain items={data.navOverview} label="Overview" />
+        <NavMain items={data.navArsenal} label="Arsenal" />
+        <NavMain items={data.navSystem} label="System" className="mt-auto" />
       </SidebarContent>
       <SidebarFooter>
         <NavUser user={user} />
