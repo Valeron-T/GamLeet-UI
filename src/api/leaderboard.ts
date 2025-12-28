@@ -1,23 +1,4 @@
-const BASE_API =
-    import.meta.env.VITE_BASE_API_URL || "http://localhost:8000";
-
-const DEFAULT_HEADERS = {
-    "X-API-KEY": import.meta.env.VITE_API_KEY!,
-};
-
-async function apiFetch(path: string) {
-    const response = await fetch(`${BASE_API}${path}`, {
-        method: "GET",
-        headers: DEFAULT_HEADERS,
-        credentials: "include",
-    });
-
-    if (!response.ok) {
-        throw new Error(`HTTP ${response.status}`);
-    }
-
-    return response.json();
-}
+import { apiFetch } from "./client";
 
 export interface LeaderboardEntry {
     rank: number;

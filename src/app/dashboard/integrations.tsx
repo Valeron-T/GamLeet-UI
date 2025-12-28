@@ -127,6 +127,7 @@ export default function Integrations() {
                             refreshStats();
                         }}
                         currentUsername={stats?.leetcode_username}
+                        currentAllowPaid={stats?.allow_paid}
                     />
 
                     <div className="mt-8 p-10 rounded-[2.5rem] bg-gradient-to-br from-primary/10 via-background to-secondary/10 border border-primary/10 flex flex-col items-center text-center gap-4 relative overflow-hidden group">

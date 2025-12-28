@@ -17,6 +17,7 @@ interface UserStats {
     email?: string;
     leetcode_connected: boolean;
     leetcode_username?: string;
+    allow_paid?: number;
     last_activity_date?: string;
 }
 
@@ -49,7 +50,12 @@ export function StatsProvider({ children }: { children: React.ReactNode }) {
     }, []);
 
     useEffect(() => {
-        refreshStats().catch(console.error);
+        // Don't fetch stats if we are on the login page
+        if (window.location.pathname !== "/") {
+            refreshStats().catch(console.error);
+        } else {
+            setLoading(false);
+        }
     }, [refreshStats]);
 
     return (

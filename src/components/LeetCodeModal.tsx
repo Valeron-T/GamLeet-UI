@@ -4,6 +4,7 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { toast } from "sonner";
+import { Switch } from "@/components/ui/switch";
 import { updateLeetCodeCredentials } from "@/api/dashboard";
 import { IconBrandLeetcode, IconExternalLink, IconInfoCircle } from "@tabler/icons-react";
 
@@ -12,11 +13,13 @@ interface LeetCodeModalProps {
     onClose: () => void;
     onSuccess: () => void;
     currentUsername?: string;
+    currentAllowPaid?: number;
 }
 
-export function LeetCodeModal({ isOpen, onClose, onSuccess, currentUsername }: LeetCodeModalProps) {
+export function LeetCodeModal({ isOpen, onClose, onSuccess, currentUsername, currentAllowPaid }: LeetCodeModalProps) {
     const [username, setUsername] = useState(currentUsername || "");
     const [session, setSession] = useState("");
+    const [allowPaid, setAllowPaid] = useState(currentAllowPaid === 1);
     const [isLoading, setIsLoading] = useState(false);
 
     const handleSubmit = async (e: React.FormEvent) => {
@@ -28,7 +31,7 @@ export function LeetCodeModal({ isOpen, onClose, onSuccess, currentUsername }: L
 
         setIsLoading(true);
         try {
-            await updateLeetCodeCredentials(username, session);
+            await updateLeetCodeCredentials(username, session, allowPaid ? 1 : 0);
             toast.success("LeetCode account linked successfully!");
             onSuccess();
             onClose();
@@ -91,6 +94,19 @@ export function LeetCodeModal({ isOpen, onClose, onSuccess, currentUsername }: L
                                 onChange={(e) => setSession(e.target.value)}
                                 className="rounded-xl border-border/50 bg-background/50 h-10"
                             />
+                        </div>
+                        <div className="flex items-center justify-between p-4 rounded-xl bg-background/50 border border-border/50">
+                            <div className="space-y-0.5">
+                                <Label className="font-bold text-xs uppercase tracking-widest">Allow Paid Problems</Label>
+                                <p className="text-[10px] text-muted-foreground font-medium">Include Premium problems in daily curation.</p>
+                            </div>
+                            <div className="flex items-center gap-2">
+                                <span className="text-[10px] font-black uppercase tracking-widest text-muted-foreground">{allowPaid ? 'On' : 'Off'}</span>
+                                <Switch
+                                    checked={allowPaid}
+                                    onCheckedChange={setAllowPaid}
+                                />
+                            </div>
                         </div>
                         <Button
                             type="submit"

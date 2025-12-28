@@ -1,28 +1,9 @@
-const BASE_API =
-  import.meta.env.VITE_BASE_API_URL || "http://localhost:8000";
-
-const DEFAULT_HEADERS = {
-  "X-API-KEY": import.meta.env.VITE_API_KEY!,
-};
+import { apiFetch } from "./client";
 
 export interface DailyQuestions {
   easy: { title: string; topics: string; slug: string; status: "unattempted" | "attempted" | "completed" };
   medium: { title: string; topics: string; slug: string; status: "unattempted" | "attempted" | "completed" };
   hard: { title: string; topics: string; slug: string; status: "unattempted" | "attempted" | "completed" };
-}
-
-async function apiFetch(path: string) {
-  const response = await fetch(`${BASE_API}${path}`, {
-    method: "GET",
-    headers: DEFAULT_HEADERS,
-    credentials: "include", // ⬅️ THIS sends cookies
-  });
-
-  if (!response.ok) {
-    throw new Error(`HTTP ${response.status}`);
-  }
-
-  return response.json();
 }
 
 export async function fetchDailyQuestions() {
@@ -39,49 +20,25 @@ export async function fetchUserMargins() {
 }
 
 export async function syncUserProgress() {
-  const response = await fetch(`${BASE_API}/user/sync`, {
+  return apiFetch("/user/sync", {
     method: "POST",
-    headers: DEFAULT_HEADERS,
-    credentials: "include",
   });
-
-  if (!response.ok) {
-    throw new Error(`HTTP ${response.status}`);
-  }
-
-  return response.json();
 }
 
 export async function updateDifficulty(difficulty_mode: string) {
-  const response = await fetch(`${BASE_API}/user/difficulty`, {
+  return apiFetch("/user/difficulty", {
     method: "POST",
     headers: {
-      ...DEFAULT_HEADERS,
       "Content-Type": "application/json",
     },
-    credentials: "include",
     body: JSON.stringify({ difficulty_mode }),
   });
-
-  if (!response.ok) {
-    throw new Error(`HTTP ${response.status}`);
-  }
-
-  return response.json();
 }
 
 export async function disconnectZerodha() {
-  const response = await fetch(`${BASE_API}/user/disconnect-zerodha`, {
+  return apiFetch("/user/disconnect-zerodha", {
     method: "POST",
-    headers: DEFAULT_HEADERS,
-    credentials: "include",
   });
-
-  if (!response.ok) {
-    throw new Error(`HTTP ${response.status}`);
-  }
-
-  return response.json();
 }
 
 export interface InventoryItem {
@@ -110,20 +67,12 @@ export async function fetchUserAchievements(): Promise<{ achievements: Achieveme
   return apiFetch("/user/achievements");
 }
 
-export async function updateLeetCodeCredentials(username: string, session: string) {
-  const response = await fetch(`${BASE_API}/user/leetcode`, {
+export async function updateLeetCodeCredentials(username: string, session: string, allow_paid: number = 0) {
+  return apiFetch("/user/leetcode", {
     method: "POST",
     headers: {
-      ...DEFAULT_HEADERS,
       "Content-Type": "application/json",
     },
-    credentials: "include",
-    body: JSON.stringify({ username, session }),
+    body: JSON.stringify({ username, session, allow_paid }),
   });
-
-  if (!response.ok) {
-    throw new Error(`HTTP ${response.status}`);
-  }
-
-  return response.json();
 }

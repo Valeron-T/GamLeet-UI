@@ -9,6 +9,8 @@ import { LoginForm } from './components/login-form.tsx';
 import { Suspense, lazy } from 'react';
 
 import { LoadingScreen } from './components/loading-screen.tsx';
+import { Toaster } from './components/ui/sonner.tsx';
+
 
 const Home = lazy(() => import('./app/dashboard/home.tsx'));
 const Settings = lazy(() => import('./app/dashboard/settings.tsx'));
@@ -77,6 +79,7 @@ createRoot(document.getElementById('root')!).render(
           </Routes>
         </BrowserRouter>
       </StatsProvider>
+      <Toaster />
     </ThemeProvider>
   </StrictMode>,
 )

@@ -69,11 +69,19 @@ function TaskQuestion({ title, tags = [], state, slug, difficulty = "easy" }: Ta
 
                 <Button
                     size="sm"
-                    variant="outline"
-                    className="h-9 px-4 font-bold uppercase tracking-tight hover:bg-primary hover:text-primary-foreground transition-all"
-                    onClick={() => window.open(`https://leetcode.com/problems/${slug}`, '_blank')}
+                    variant={state === "completed" ? "ghost" : "outline"}
+                    className={`h-9 px-4 font-bold uppercase tracking-tight transition-all ${state === "completed"
+                            ? "text-green-500 cursor-default"
+                            : "hover:bg-primary hover:text-primary-foreground"
+                        }`}
+                    onClick={() => {
+                        if (state !== "completed") {
+                            window.open(`https://leetcode.com/problems/${slug}`, '_blank')
+                        }
+                    }}
+                    disabled={state === "completed"}
                 >
-                    Solve
+                    {state === "completed" ? "Solved" : "Solve"}
                 </Button>
             </ItemActions>
         </Item>
