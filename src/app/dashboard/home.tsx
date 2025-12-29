@@ -105,7 +105,7 @@ export default function Home() {
                           Connect your LeetCode account to access curated daily problems and earn rewards like GamCoins and XP.
                         </p>
                         <button
-                          onClick={() => window.location.href = "/dashboard/integrations"}
+                          onClick={() => window.location.href = "/integrations"}
                           className="mt-6 px-6 py-2.5 rounded-xl bg-primary text-primary-foreground font-bold text-sm hover:scale-105 transition-transform shadow-lg shadow-primary/20 flex items-center gap-2"
                         >
                           Connect Now <RefreshCcw size={14} />

@@ -10,8 +10,10 @@ import { IconMail, IconBrandDiscord, IconBrandSlack, IconBrandWhatsapp, IconPlug
 import { useStats } from "@/contexts/StatsContext.tsx"
 import { useState } from "react"
 import { LeetCodeModal } from "@/components/LeetCodeModal.tsx"
+import { ZerodhaModal } from "@/components/ZerodhaModal.tsx"
 import { syncUserProgress } from "@/api/dashboard"
 import { toast } from "sonner"
+import { IconCurrencyRupee } from "@tabler/icons-react"
 
 const communicationIntegrations = [
     {
@@ -55,6 +57,7 @@ const communicationIntegrations = [
 export default function Integrations() {
     const { stats, refreshStats } = useStats();
     const [isLeetCodeModalOpen, setIsLeetCodeModalOpen] = useState(false);
+    const [isZerodhaModalOpen, setIsZerodhaModalOpen] = useState(false);
 
     const leetcodeStatus = stats?.leetcode_connected ? "connected" : "disconnected";
 
@@ -67,6 +70,18 @@ export default function Integrations() {
             status: leetcodeStatus,
             type: "Source",
             details: "Syncs your daily solves and contest performance directly from your profile."
+        }
+    ];
+
+    const tradingPlatformIntegrations = [
+        {
+            id: "zerodha",
+            name: "Zerodha",
+            description: stats?.zerodha_connected ? "Kite Connect Configured" : "Penalty Execution Hub",
+            icon: <IconCurrencyRupee className="text-sky-500" size={24} />,
+            status: stats?.zerodha_connected ? "connected" : "disconnected",
+            type: "Penalty",
+            details: "Executes automated stock purchases as penalties for missed goals. Required for Hardcore/God modes."
         }
     ];
 
@@ -95,7 +110,7 @@ export default function Integrations() {
                         </div>
                         <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                             {communicationIntegrations.map((item) => (
-                                <IntegrationCard key={item.id} item={item} />
+                                <IntegrationCard key={item.id} item={item} onLogin={() => { }} />
                             ))}
                         </div>
                     </div>
@@ -120,6 +135,39 @@ export default function Integrations() {
                         </div>
                     </div>
 
+                    {/* Trading Platforms */}
+                    <div className="space-y-6">
+                        <div className="flex items-center gap-3">
+                            <IconCurrencyRupee size={20} className="text-muted-foreground" />
+                            <h2 className="text-sm font-black uppercase tracking-widest text-muted-foreground">Trading Platforms</h2>
+                            <Separator className="flex-1 opacity-50" />
+                        </div>
+                        <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                            {tradingPlatformIntegrations.map((item) => (
+                                <IntegrationCard
+                                    key={item.id}
+                                    item={item}
+                                    onConfigure={() => {
+                                        if (item.id === "zerodha") setIsZerodhaModalOpen(true);
+                                    }}
+                                    onLogin={async () => {
+                                        if (item.id === "zerodha") {
+                                            if (!stats?.zerodha_connected) {
+                                                toast.error("Please configure your API credentials first");
+                                                setIsZerodhaModalOpen(true);
+                                                return;
+                                            }
+                                            // Trigger the backend login which uses stored keys
+                                            const backendUrl = localStorage.getItem('backend_url') || "localhost:8000";
+                                            const protocol = backendUrl.startsWith('http') ? '' : 'http://';
+                                            window.location.href = `${protocol}${backendUrl}/user/login`;
+                                        }
+                                    }}
+                                />
+                            ))}
+                        </div>
+                    </div>
+
                     <LeetCodeModal
                         isOpen={isLeetCodeModalOpen}
                         onClose={() => setIsLeetCodeModalOpen(false)}
@@ -128,6 +176,14 @@ export default function Integrations() {
                         }}
                         currentUsername={stats?.leetcode_username}
                         currentAllowPaid={stats?.allow_paid}
+                    />
+
+                    <ZerodhaModal
+                        isOpen={isZerodhaModalOpen}
+                        onClose={() => setIsZerodhaModalOpen(false)}
+                        onSuccess={() => {
+                            refreshStats();
+                        }}
                     />
 
                     <div className="mt-8 p-10 rounded-[2.5rem] bg-gradient-to-br from-primary/10 via-background to-secondary/10 border border-primary/10 flex flex-col items-center text-center gap-4 relative overflow-hidden group">
@@ -149,7 +205,7 @@ export default function Integrations() {
     )
 }
 
-function IntegrationCard({ item, onConfigure }: { item: any, onConfigure?: () => void }) {
+function IntegrationCard({ item, onConfigure, onLogin }: { item: any, onConfigure?: () => void, onLogin?: () => void }) {
     const [isSyncing, setIsSyncing] = useState(false);
 
     return (
@@ -189,6 +245,16 @@ function IntegrationCard({ item, onConfigure }: { item: any, onConfigure?: () =>
                             >
                                 <IconSettings size={16} />
                             </Button>
+                            {item.id === "zerodha" && (
+                                <Button
+                                    variant="outline"
+                                    size="sm"
+                                    className="h-8 text-[10px] font-black uppercase tracking-widest bg-emerald-500/10 text-emerald-500 border-emerald-500/20 hover:bg-emerald-500/20"
+                                    onClick={onLogin}
+                                >
+                                    Login
+                                </Button>
+                            )}
                             <Switch
                                 checked={true}
                                 disabled={isSyncing}

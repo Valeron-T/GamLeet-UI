@@ -9,6 +9,7 @@ import { Badge } from "@/components/ui/badge"
 import { IconAlertTriangle, IconHistory, IconTarget, IconBrain } from "@tabler/icons-react"
 import { useEffect, useState } from "react"
 import { Skeleton } from "@/components/ui/skeleton.tsx"
+import { ComingSoonOverlay } from "@/components/coming-soon-overlay.tsx"
 
 const difficultyData = [
     { complexity: "easy", value: 45, fill: "var(--color-easy)" },
@@ -105,7 +106,11 @@ export default function Analytics() {
             <AppSidebar variant="inset" />
             <SidebarInset>
                 <SiteHeader />
-                <div className="flex flex-1 flex-col gap-6 p-4 md:p-6">
+                <div className="flex flex-1 flex-col gap-6 p-4 md:p-6 relative">
+                    <ComingSoonOverlay
+                        title="Analytics Locked"
+                        description="Deep behavioral insights and portfolio impact metrics are currently being calibrated. Stay tuned for the data drop."
+                    />
                     <div className="flex items-center justify-between">
                         <div>
                             <h1 className="text-3xl font-bold tracking-tight">Advanced Analytics</h1>

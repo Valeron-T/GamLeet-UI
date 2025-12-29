@@ -9,6 +9,9 @@ import {
   IconTarget,
   IconPlug,
   IconHelp,
+  IconBrandGithub,
+  IconWorld,
+  IconRocket,
 } from "@tabler/icons-react"
 import { useStats } from "@/contexts/StatsContext"
 
@@ -34,11 +37,13 @@ const data = {
       title: "Leaderboard",
       url: "/leaderboard",
       icon: IconTrophy,
+      badge: "Soon",
     },
     {
       title: "Analytics",
       url: "/analytics",
       icon: IconChartBar,
+      badge: "Soon",
     },
   ],
   navArsenal: [
@@ -73,6 +78,23 @@ const data = {
       title: "Get Help",
       url: "/help",
       icon: IconHelp,
+    },
+  ],
+  navSecondary: [
+    {
+      title: "GitHub",
+      url: "https://github.com/Valeron-T/GamLeet",
+      icon: IconBrandGithub,
+    },
+    {
+      title: "Website",
+      url: "https://valeron.me",
+      icon: IconWorld,
+    },
+    {
+      title: "What's Next",
+      url: "/whats-next",
+      icon: IconRocket,
     },
   ],
 }
@@ -115,7 +137,8 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
       <SidebarContent>
         <NavMain items={data.navOverview} label="Overview" />
         <NavMain items={data.navArsenal} label="Arsenal" />
-        <NavMain items={data.navSystem} label="System" className="mt-auto" />
+        <NavMain items={data.navSystem} label="System" />
+        <NavMain items={data.navSecondary} label="Source" className="mt-auto" />
       </SidebarContent>
       <SidebarFooter>
         <NavUser user={user} />

@@ -1,4 +1,3 @@
-import { Button } from "@/components/ui/button.tsx"
 import { Separator } from "@/components/ui/separator.tsx"
 import { SidebarTrigger } from "@/components/ui/sidebar.tsx"
 import { RiCopperCoinFill } from "react-icons/ri"
@@ -37,16 +36,6 @@ export function SiteHeader() {
               <span className="text-sm font-black font-mono tracking-tight">{stats.gamcoins} <span className="text-[10px] opacity-50 uppercase ml-0.5">GC</span></span>
             </div>
           )}
-          <Button variant="ghost" asChild size="sm" className="hidden sm:flex">
-            <a
-              href="https://github.com/Valeron-T/GamLeet"
-              rel="noopener noreferrer"
-              target="_blank"
-              className="dark:text-foreground hover:text-primary transition-colors"
-            >
-              GitHub
-            </a>
-          </Button>
         </div>
       </div>
     </header>

@@ -1,4 +1,4 @@
-import { IconTrendingUp } from "@tabler/icons-react"
+import { IconTrendingUp, IconAlertTriangle } from "@tabler/icons-react"
 import { useStats } from "@/contexts/StatsContext"
 import {
   Card,
@@ -316,10 +316,19 @@ export function SectionCards() {
         </CardHeader>
         <CardFooter className="flex-col items-start gap-1 pb-6">
           <div className="line-clamp-1 text-[11px] font-bold uppercase tracking-tight text-foreground/80 flex items-center gap-1.5">
-            Wealth Status <IconTrendingUp className="size-3 text-emerald-500" />
+            Wealth Status
+            {stats.zerodha_error ? (
+              <IconAlertTriangle className="size-3 text-destructive" />
+            ) : (
+              <IconTrendingUp className="size-3 text-emerald-500" />
+            )}
           </div>
           <div className="text-[10px] text-muted-foreground italic leading-tight">
-            {stats.available_balance < 100 ? "Might afford you one chai during inflation." : "Finally, some real money!"}
+            {stats.zerodha_error
+              ? `Error: ${stats.zerodha_error.includes("Token") ? "Session Expired" : "Connect Failed"}`
+              : stats.available_balance < 100
+                ? "Might afford you one chai during inflation."
+                : "Finally, some real money!"}
           </div>
         </CardFooter>
       </Card>

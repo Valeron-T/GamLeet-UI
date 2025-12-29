@@ -17,7 +17,9 @@ interface UserStats {
     email?: string;
     leetcode_connected: boolean;
     leetcode_username?: string;
+    zerodha_connected: boolean;
     allow_paid?: number;
+    zerodha_error?: string;
     last_activity_date?: string;
 }
 
@@ -30,10 +32,13 @@ interface StatsContextType {
 
 const StatsContext = createContext<StatsContextType | undefined>(undefined);
 
+import { useAuth } from "./AuthContext";
+
 export function StatsProvider({ children }: { children: React.ReactNode }) {
     const [stats, setStats] = useState<UserStats | null>(null);
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState<any>(null);
+    const { isAuthenticated } = useAuth();
 
     const refreshStats = useCallback(async () => {
         try {
@@ -50,13 +55,14 @@ export function StatsProvider({ children }: { children: React.ReactNode }) {
     }, []);
 
     useEffect(() => {
-        // Don't fetch stats if we are on the login page
-        if (window.location.pathname !== "/") {
+        if (isAuthenticated) {
+            setLoading(true);
             refreshStats().catch(console.error);
         } else {
+            setStats(null);
             setLoading(false);
         }
-    }, [refreshStats]);
+    }, [isAuthenticated, refreshStats]);
 
     return (
         <StatsContext.Provider value={{ stats, loading, error, refreshStats }}>

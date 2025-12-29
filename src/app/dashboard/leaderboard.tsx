@@ -6,6 +6,7 @@ import { useEffect, useState } from "react"
 import { fetchLeaderboard, LeaderboardEntry } from "@/api/leaderboard"
 import { Skeleton } from "@/components/ui/skeleton.tsx"
 import { IconTrophy, IconFlame, IconTarget, IconSum } from "@tabler/icons-react"
+import { ComingSoonOverlay } from "@/components/coming-soon-overlay.tsx"
 
 export default function Leaderboard() {
     const [entries, setEntries] = useState<LeaderboardEntry[]>([])
@@ -28,7 +29,11 @@ export default function Leaderboard() {
             <AppSidebar variant="inset" />
             <SidebarInset>
                 <SiteHeader />
-                <div className="flex flex-1 flex-col p-4 md:p-6 gap-6">
+                <div className="flex flex-1 flex-col p-4 md:p-6 gap-6 relative">
+                    <ComingSoonOverlay
+                        title="Leaderboard Restricted"
+                        description="Global rankings and peer accountability modules are currently under construction. Compete with the best soon."
+                    />
                     <div className="flex flex-col gap-2">
                         <h1 className="text-3xl font-bold tracking-tight bg-clip-text text-transparent bg-gradient-to-r from-foreground to-foreground/60">
                             Global Leaderboard

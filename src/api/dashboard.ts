@@ -76,3 +76,13 @@ export async function updateLeetCodeCredentials(username: string, session: strin
     body: JSON.stringify({ username, session, allow_paid }),
   });
 }
+
+export async function updateZerodhaCredentials(api_key: string, api_secret: string) {
+  return apiFetch("/user/zerodha", {
+    method: "POST",
+    headers: {
+      "Content-Type": "application/json",
+    },
+    body: JSON.stringify({ api_key, api_secret }),
+  });
+}
