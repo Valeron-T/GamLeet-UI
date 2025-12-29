@@ -23,6 +23,7 @@ const Integrations = lazy(() => import('./app/dashboard/integrations.tsx'));
 const Inventory = lazy(() => import('./app/dashboard/inventory.tsx'));
 const Leaderboard = lazy(() => import('./app/dashboard/leaderboard.tsx'));
 const WhatsNext = lazy(() => import('./app/dashboard/whats-next.tsx'));
+const ProblemSets = lazy(() => import('./app/dashboard/problem-sets.tsx'));
 
 
 createRoot(document.getElementById('root')!).render(
@@ -82,6 +83,11 @@ createRoot(document.getElementById('root')!).render(
               <Route path="/whats-next" element={
                 <Suspense fallback={<LoadingScreen />}>
                   <WhatsNext />
+                </Suspense>
+              } />
+              <Route path="/problem-sets" element={
+                <Suspense fallback={<LoadingScreen />}>
+                  <ProblemSets />
                 </Suspense>
               } />
             </Routes>

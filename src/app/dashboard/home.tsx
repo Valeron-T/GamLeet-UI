@@ -117,21 +117,21 @@ export default function Home() {
                           title={dailyQuestions.easy.title}
                           tags={dailyQuestions.easy.topics?.split(", ") || []}
                           state={dailyQuestions.easy.status}
-                          difficulty="easy"
+                          difficulty={dailyQuestions.easy.difficulty.toLowerCase().startsWith('h') ? 'hard' : dailyQuestions.easy.difficulty.toLowerCase().startsWith('m') ? 'med' : 'easy'}
                           slug={dailyQuestions.easy.slug}
                         />
                         <TaskQuestion
                           title={dailyQuestions.medium.title}
                           tags={dailyQuestions.medium.topics?.split(", ") || []}
                           state={dailyQuestions.medium.status}
-                          difficulty="med"
+                          difficulty={dailyQuestions.medium.difficulty.toLowerCase().startsWith('h') ? 'hard' : dailyQuestions.medium.difficulty.toLowerCase().startsWith('m') ? 'med' : 'easy'}
                           slug={dailyQuestions.medium.slug}
                         />
                         <TaskQuestion
                           title={dailyQuestions.hard.title}
                           tags={dailyQuestions.hard.topics?.split(", ") || []}
                           state={dailyQuestions.hard.status}
-                          difficulty="hard"
+                          difficulty={dailyQuestions.hard.difficulty.toLowerCase().startsWith('h') ? 'hard' : dailyQuestions.hard.difficulty.toLowerCase().startsWith('m') ? 'med' : 'easy'}
                           slug={dailyQuestions.hard.slug}
                         />
                       </>

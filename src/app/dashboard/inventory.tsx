@@ -142,8 +142,8 @@ export default function Inventory() {
                                     <div
                                         key={ach.id}
                                         className={`relative p-4 rounded-xl border-2 transition-all ${ach.unlocked
-                                                ? RARITY_STYLES[ach.rarity]
-                                                : "border-muted/30 bg-muted/5 opacity-60"
+                                            ? RARITY_STYLES[ach.rarity]
+                                            : "border-muted/30 bg-muted/5 opacity-60"
                                             }`}
                                     >
                                         <div className="flex items-start gap-3">

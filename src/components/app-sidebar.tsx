@@ -12,6 +12,7 @@ import {
   IconBrandGithub,
   IconWorld,
   IconRocket,
+  IconListCheck,
 } from "@tabler/icons-react"
 import { useStats } from "@/contexts/StatsContext"
 
@@ -32,6 +33,11 @@ const data = {
       title: "Dashboard",
       url: "/dashboard",
       icon: IconDashboard,
+    },
+    {
+      title: "Problem Sets",
+      url: "/problem-sets",
+      icon: IconListCheck,
     },
     {
       title: "Leaderboard",

@@ -1,9 +1,9 @@
 import { apiFetch } from "./client";
 
 export interface DailyQuestions {
-  easy: { title: string; topics: string; slug: string; status: "unattempted" | "attempted" | "completed" };
-  medium: { title: string; topics: string; slug: string; status: "unattempted" | "attempted" | "completed" };
-  hard: { title: string; topics: string; slug: string; status: "unattempted" | "attempted" | "completed" };
+  easy: { title: string; topics: string; slug: string; difficulty: string; status: "unattempted" | "attempted" | "completed" };
+  medium: { title: string; topics: string; slug: string; difficulty: string; status: "unattempted" | "attempted" | "completed" };
+  hard: { title: string; topics: string; slug: string; difficulty: string; status: "unattempted" | "attempted" | "completed" };
 }
 
 export async function fetchDailyQuestions() {
