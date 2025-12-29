@@ -158,9 +158,8 @@ export default function Integrations() {
                                                 return;
                                             }
                                             // Trigger the backend login which uses stored keys
-                                            const backendUrl = localStorage.getItem('backend_url') || "localhost:8000";
-                                            const protocol = backendUrl.startsWith('http') ? '' : 'http://';
-                                            window.location.href = `${protocol}${backendUrl}/user/login`;
+                                            const baseUrl = import.meta.env.VITE_API_BASE_URL || "http://localhost:8000";
+                                            window.location.href = `${baseUrl}/user/login`;
                                         }
                                     }}
                                 />

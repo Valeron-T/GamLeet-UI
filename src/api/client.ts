@@ -24,13 +24,8 @@ async function handleResponse(response: Response) {
 }
 
 export async function apiFetch(path: string, options: RequestInit = {}) {
-    const storedBackendUrl = localStorage.getItem('backend_url') || "localhost:8000";
+    const baseUrl = import.meta.env.VITE_API_BASE_URL || "http://localhost:8000";
     const storedXapiKey = localStorage.getItem('x_api_key') || import.meta.env.VITE_API_KEY!;
-
-    // Ensure the backend URL has a protocol
-    const baseUrl = storedBackendUrl.startsWith('http')
-        ? storedBackendUrl
-        : `http://${storedBackendUrl}`;
 
     const response = await fetch(`${baseUrl}${path}`, {
         ...options,
