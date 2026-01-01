@@ -20,6 +20,7 @@ export function NavMain({
     url: string
     icon?: Icon
     badge?: string
+    id?: string
   }[]
   label?: string
   className?: string
@@ -33,7 +34,7 @@ export function NavMain({
             const isExternal = item.url.startsWith("http");
             return (
               <SidebarMenuItem key={item.title}>
-                <SidebarMenuButton asChild tooltip={item.title}>
+                <SidebarMenuButton asChild tooltip={item.title} id={item.id}>
                   {isExternal ? (
                     <a href={item.url} target="_blank" rel="noopener noreferrer">
                       {item.icon && <item.icon />}

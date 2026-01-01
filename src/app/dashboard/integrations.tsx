@@ -8,7 +8,7 @@ import { Switch } from "@/components/ui/switch"
 import { Separator } from "@/components/ui/separator"
 import { IconMail, IconBrandDiscord, IconBrandSlack, IconBrandWhatsapp, IconPlug, IconSettings, IconShieldCheck, IconCode, IconBrandLeetcode } from "@tabler/icons-react"
 import { useStats } from "@/contexts/StatsContext.tsx"
-import { useState } from "react"
+import { useState, useEffect } from "react"
 import { LeetCodeModal } from "@/components/LeetCodeModal.tsx"
 import { ZerodhaModal } from "@/components/ZerodhaModal.tsx"
 import { disconnectZerodha, disconnectLeetCode, updateEmailPreferences } from "@/api/dashboard"
@@ -231,6 +231,32 @@ export default function Integrations() {
 
 function IntegrationCard({ item, onConfigure, onLogin, onToggle }: { item: any, onConfigure?: () => void, onLogin?: () => void, onToggle?: (checked: boolean) => void }) {
     const isConnected = item.status === "connected";
+    const [localChecked, setLocalChecked] = useState(isConnected);
+    const [isPending, setIsPending] = useState(false);
+
+    // Sync local state with prop when prop changes (external update), allowing for optimistic updates to persist if pending
+    useEffect(() => {
+        if (!isPending) {
+            setLocalChecked(isConnected);
+        }
+    }, [isConnected, isPending]);
+
+    const handleSwitchChange = async (checked: boolean) => {
+        if (!onToggle) return;
+
+        // Optimistic update
+        setLocalChecked(checked);
+        setIsPending(true);
+
+        try {
+            await onToggle(checked);
+        } catch (e) {
+            // Revert on error
+            setLocalChecked(!checked);
+        } finally {
+            setIsPending(false);
+        }
+    };
 
     return (
         <Card className="group relative overflow-hidden border-border/50 bg-card/50 transition-all hover:border-primary/30">
@@ -281,19 +307,23 @@ function IntegrationCard({ item, onConfigure, onLogin, onToggle }: { item: any, 
                                     Login
                                 </Button>
                             )}
+                            {/* For Zerodha/Leetcode, we retain the "Disconnect" switch logic. 
+                                For Resend, we want a toggle. 
+                                Since Resend behaves like a toggle, checking/unchecking is valid. 
+                                For others, only unchecking (Disconnect) is valid here.
+                            */}
                             <Switch
-                                checked={true}
+                                checked={localChecked}
+                                disabled={isPending}
                                 onCheckedChange={(checked) => {
-                                    if (!checked && onToggle) {
-                                        onToggle(checked);
+                                    // Verify if this action is allowed
+                                    if (item.id !== 'resend' && checked) {
+                                        // If trying to turn ON Leetcode/Zerodha via switch, we likely don't support it this way 
+                                        // (needs modal or login flow). But here we are in "isConnected" block.
+                                        // So "checked" should be false (Disconnecting).
+                                        return;
                                     }
-                                    // Note: Resend logic might allow checking ON again if we implemented it, 
-                                    // but for "Deleting" or disconnecting, usually it's one way until re-configured.
-                                    // But for Resend (email toggle), it's a true toggle.
-                                    // So we should allow onToggle to be called for both true/false if valid.
-                                    if (item.id === "resend" && onToggle) {
-                                        if (checked) onToggle(true);
-                                    }
+                                    handleSwitchChange(checked);
                                 }}
                             />
                         </div>
@@ -307,10 +337,9 @@ function IntegrationCard({ item, onConfigure, onLogin, onToggle }: { item: any, 
                         <div className="flex items-center gap-2">
                             {item.id === "resend" ? (
                                 <Switch
-                                    checked={false}
-                                    onCheckedChange={(checked) => {
-                                        if (checked && onToggle) onToggle(true);
-                                    }}
+                                    checked={localChecked}
+                                    disabled={isPending}
+                                    onCheckedChange={handleSwitchChange}
                                 />
                             ) : (
                                 <Button

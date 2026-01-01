@@ -16,6 +16,8 @@ import { Skeleton } from "@/components/ui/skeleton.tsx";
 import { toast } from "sonner";
 import { useStats } from "@/contexts/StatsContext";
 
+import { TourGuide } from "@/components/walkthrough/tour-guide";
+
 function TaskQuestionSkeleton() {
   return (
     <div className="flex items-center justify-between p-4 rounded-xl border border-border/50 bg-muted/5">
@@ -79,8 +81,11 @@ export default function Home() {
   const progressValue = Math.round((solvedCount / 3) * 100);
   const progressText = `${solvedCount} of 3 Problems Completed`;
 
+
+
   return (
     <SidebarProvider>
+      <TourGuide />
       <AppSidebar variant="inset" />
       <SidebarInset>
         <SiteHeader />

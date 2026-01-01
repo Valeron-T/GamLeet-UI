@@ -41,6 +41,7 @@ const data = {
       title: "Problem Sets",
       url: "/problem-sets",
       icon: IconListCheck,
+      id: "sidebar-problem-sets",
     },
     {
       title: "Leaderboard",
@@ -65,6 +66,7 @@ const data = {
       title: "Powerup Store",
       url: "/store",
       icon: IconBuildingStore,
+      id: "sidebar-store",
     },
     {
       title: "Inventory",
@@ -77,6 +79,7 @@ const data = {
       title: "Integrations",
       url: "/integrations",
       icon: IconPlug,
+      id: "sidebar-integrations",
     },
     {
       title: "Settings",
@@ -132,7 +135,7 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
   }, [stats])
 
   return (
-    <Sidebar collapsible="offcanvas" {...props}>
+    <Sidebar id="sidebar" collapsible="offcanvas" {...props}>
       <SidebarHeader>
         <SidebarMenu>
           <SidebarMenuItem>

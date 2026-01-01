@@ -256,7 +256,7 @@ export function SectionCards() {
 
   return (
     <div className="grid grid-cols-1 gap-6 px-4 lg:px-6 @xl/main:grid-cols-2 @5xl/main:grid-cols-4">
-      <Card className="@container/card bg-gradient-to-br from-card to-card/30 border-border/50 shadow-xl transition-all duration-300 hover:border-destructive/20 group">
+      <Card id="stat-lives" className="@container/card bg-gradient-to-br from-card to-card/30 border-border/50 shadow-xl transition-all duration-300 hover:border-destructive/20 group">
         <CardHeader className="pb-2">
           <CardDescription className="text-[10px] uppercase font-black tracking-widest text-muted-foreground group-hover:text-destructive transition-colors">Lifetime Losses</CardDescription>
           <CardTitle className="text-3xl font-black font-mono tracking-tighter tabular-nums text-destructive">
@@ -273,7 +273,7 @@ export function SectionCards() {
         </CardFooter>
       </Card>
 
-      <Card className="@container/card bg-gradient-to-br from-card to-card/30 border-border/50 shadow-xl transition-all duration-300 hover:border-primary/20 group">
+      <Card id="stat-streak" className="@container/card bg-gradient-to-br from-card to-card/30 border-border/50 shadow-xl transition-all duration-300 hover:border-primary/20 group">
         <CardHeader className="pb-2">
           <CardDescription className="text-[10px] uppercase font-black tracking-widest text-muted-foreground group-hover:text-primary transition-colors">Current Streak</CardDescription>
           <CardTitle className="text-3xl font-black font-mono tracking-tighter tabular-nums">
@@ -290,7 +290,7 @@ export function SectionCards() {
         </CardFooter>
       </Card>
 
-      <Card className="@container/card bg-gradient-to-br from-card to-card/30 border-border/50 shadow-xl transition-all duration-300 hover:border-emerald-500/20 group">
+      <Card id="stat-solved" className="@container/card bg-gradient-to-br from-card to-card/30 border-border/50 shadow-xl transition-all duration-300 hover:border-emerald-500/20 group">
         <CardHeader className="pb-2">
           <CardDescription className="text-[10px] uppercase font-black tracking-widest text-muted-foreground group-hover:text-emerald-500 transition-colors">Problems Solved</CardDescription>
           <CardTitle className="text-3xl font-black font-mono tracking-tighter tabular-nums text-emerald-500">
@@ -307,7 +307,7 @@ export function SectionCards() {
         </CardFooter>
       </Card>
 
-      <Card className="@container/card bg-gradient-to-br from-card to-card/30 border-border/50 shadow-xl transition-all duration-300 hover:border-amber-500/20 group">
+      <Card id="stat-balance" className="@container/card bg-gradient-to-br from-card to-card/30 border-border/50 shadow-xl transition-all duration-300 hover:border-amber-500/20 group">
         <CardHeader className="pb-2">
           <CardDescription className="text-[10px] uppercase font-black tracking-widest text-muted-foreground group-hover:text-amber-500 transition-colors">Available Balance</CardDescription>
           <CardTitle className="text-3xl font-black font-mono tracking-tighter tabular-nums text-amber-500">

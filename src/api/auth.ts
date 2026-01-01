@@ -14,6 +14,7 @@ export interface User {
     name: string;
     picture?: string;
     provider: string;
+    has_completed_walkthrough: boolean;
 }
 
 export async function loginWithGoogle(token: string): Promise<AuthResponse> {
