@@ -8,7 +8,7 @@ import TaskQuestion from "@/components/task-question"
 import { Card, CardContent } from "@/components/ui/card"
 import { SidebarInset, SidebarProvider } from "@/components/ui/sidebar.tsx"
 import { Progress } from "@/components/ui/progress";
-import { Calendar, RefreshCcw, Zap } from "lucide-react"
+import { Calendar, RefreshCcw } from "lucide-react"
 import { FaFire } from "react-icons/fa";
 import { useEffect, useState } from "react";
 import { fetchDailyQuestions, DailyQuestionsResponse, syncUserProgress } from "@/api/dashboard";
