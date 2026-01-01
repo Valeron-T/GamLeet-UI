@@ -103,3 +103,19 @@ export async function purchasePowerup(powerup_id: string) {
     body: JSON.stringify({ powerup_id }),
   });
 }
+
+export async function updateEmailPreferences(enabled: boolean) {
+  return apiFetch("/user/integrations/email", {
+    method: "POST",
+    headers: {
+      "Content-Type": "application/json",
+    },
+    body: JSON.stringify({ enabled }),
+  });
+}
+
+export async function disconnectLeetCode() {
+  return apiFetch("/user/disconnect-leetcode", {
+    method: "POST",
+  });
+}

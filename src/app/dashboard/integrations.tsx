@@ -11,55 +11,72 @@ import { useStats } from "@/contexts/StatsContext.tsx"
 import { useState } from "react"
 import { LeetCodeModal } from "@/components/LeetCodeModal.tsx"
 import { ZerodhaModal } from "@/components/ZerodhaModal.tsx"
-import { syncUserProgress } from "@/api/dashboard"
+import { disconnectZerodha, disconnectLeetCode, updateEmailPreferences } from "@/api/dashboard"
 import { toast } from "sonner"
 import { IconCurrencyRupee } from "@tabler/icons-react"
-
-const communicationIntegrations = [
-    {
-        id: "resend",
-        name: "Resend",
-        description: "Email notifications and system alerts.",
-        icon: <IconMail className="text-sky-500" size={24} />,
-        status: "connected",
-        type: "Active",
-        details: "Sends penalty reports and streak reminders via secure SMTP."
-    },
-    {
-        id: "discord",
-        name: "Discord",
-        description: "Real-time updates in your server.",
-        icon: <IconBrandDiscord className="text-indigo-500" size={24} />,
-        status: "coming-soon",
-        type: "Nudger",
-        details: "Webhooks for daily status and public accountability."
-    },
-    {
-        id: "slack",
-        name: "Slack",
-        description: "Professional nudges for workspace teams.",
-        icon: <IconBrandSlack className="text-rose-500" size={24} />,
-        status: "coming-soon",
-        type: "Nudger",
-        details: "Direct messages and channel alerts for team-based DSA cycles."
-    },
-    {
-        id: "whatsapp",
-        name: "WhatsApp",
-        description: "Direct notifications to your phone.",
-        icon: <IconBrandWhatsapp className="text-emerald-500" size={24} />,
-        status: "coming-soon",
-        type: "Priority",
-        details: "High-priority alerts for impending penalties."
-    }
-];
 
 export default function Integrations() {
     const { stats, refreshStats } = useStats();
     const [isLeetCodeModalOpen, setIsLeetCodeModalOpen] = useState(false);
     const [isZerodhaModalOpen, setIsZerodhaModalOpen] = useState(false);
 
-    const leetcodeStatus = stats?.leetcode_connected ? "connected" : "disconnected";
+    const handleToggle = async (id: string, checked: boolean) => {
+        try {
+            if (id === "resend") {
+                await updateEmailPreferences(checked);
+                toast.success(`Email notifications ${checked ? "enabled" : "disabled"}`);
+            } else if (id === "leetcode" && !checked) {
+                await disconnectLeetCode();
+                toast.success("LeetCode disconnected");
+            } else if (id === "zerodha" && !checked) {
+                await disconnectZerodha();
+                toast.success("Zerodha disconnected");
+            }
+            await refreshStats();
+        } catch (e) {
+            toast.error("Failed to update settings");
+            console.error(e);
+        }
+    };
+
+    const communicationIntegrations = [
+        {
+            id: "resend",
+            name: "Resend",
+            description: "Email notifications and system alerts.",
+            icon: <IconMail className="text-sky-500" size={24} />,
+            status: stats?.email_notifications !== false ? "connected" : "disconnected",
+            type: "Active",
+            details: "Sends penalty reports and streak reminders via secure SMTP."
+        },
+        {
+            id: "discord",
+            name: "Discord",
+            description: "Real-time updates in your server.",
+            icon: <IconBrandDiscord className="text-indigo-500" size={24} />,
+            status: "coming-soon",
+            type: "Nudger",
+            details: "Webhooks for daily status and public accountability."
+        },
+        {
+            id: "slack",
+            name: "Slack",
+            description: "Professional nudges for workspace teams.",
+            icon: <IconBrandSlack className="text-rose-500" size={24} />,
+            status: "coming-soon",
+            type: "Nudger",
+            details: "Direct messages and channel alerts for team-based DSA cycles."
+        },
+        {
+            id: "whatsapp",
+            name: "WhatsApp",
+            description: "Direct notifications to your phone.",
+            icon: <IconBrandWhatsapp className="text-emerald-500" size={24} />,
+            status: "coming-soon",
+            type: "Priority",
+            details: "High-priority alerts for impending penalties."
+        }
+    ];
 
     const codePlatformIntegrations = [
         {
@@ -67,7 +84,7 @@ export default function Integrations() {
             name: "LeetCode",
             description: stats?.leetcode_username || "Core problem tracking system.",
             icon: <IconBrandLeetcode className="text-amber-500" size={24} />,
-            status: leetcodeStatus,
+            status: stats?.leetcode_connected ? "connected" : "disconnected",
             type: "Source",
             details: "Syncs your daily solves and contest performance directly from your profile."
         }
@@ -110,7 +127,11 @@ export default function Integrations() {
                         </div>
                         <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                             {communicationIntegrations.map((item) => (
-                                <IntegrationCard key={item.id} item={item} onLogin={() => { }} />
+                                <IntegrationCard
+                                    key={item.id}
+                                    item={item}
+                                    onToggle={(checked) => handleToggle(item.id, checked)}
+                                />
                             ))}
                         </div>
                     </div>
@@ -130,6 +151,7 @@ export default function Integrations() {
                                     onConfigure={() => {
                                         if (item.id === "leetcode") setIsLeetCodeModalOpen(true);
                                     }}
+                                    onToggle={(checked) => handleToggle(item.id, checked)}
                                 />
                             ))}
                         </div>
@@ -157,11 +179,11 @@ export default function Integrations() {
                                                 setIsZerodhaModalOpen(true);
                                                 return;
                                             }
-                                            // Trigger the backend login which uses stored keys
                                             const baseUrl = import.meta.env.VITE_API_BASE_URL || "http://localhost:8000";
                                             window.location.href = `${baseUrl}/user/login`;
                                         }
                                     }}
+                                    onToggle={(checked) => handleToggle(item.id, checked)}
                                 />
                             ))}
                         </div>
@@ -207,8 +229,8 @@ export default function Integrations() {
     )
 }
 
-function IntegrationCard({ item, onConfigure, onLogin }: { item: any, onConfigure?: () => void, onLogin?: () => void }) {
-    const [isSyncing, setIsSyncing] = useState(false);
+function IntegrationCard({ item, onConfigure, onLogin, onToggle }: { item: any, onConfigure?: () => void, onLogin?: () => void, onToggle?: (checked: boolean) => void }) {
+    const isConnected = item.status === "connected";
 
     return (
         <Card className="group relative overflow-hidden border-border/50 bg-card/50 transition-all hover:border-primary/30">
@@ -232,22 +254,24 @@ function IntegrationCard({ item, onConfigure, onLogin }: { item: any, onConfigur
                 </p>
             </CardContent>
             <CardFooter className="pt-2 flex items-center justify-between">
-                {item.status === "connected" ? (
+                {isConnected ? (
                     <>
                         <div className="flex items-center gap-2">
                             <div className="h-2 w-2 rounded-full bg-emerald-500 animate-pulse" />
                             <span className="text-xs font-bold text-emerald-500 tracking-wider uppercase">Active</span>
                         </div>
                         <div className="flex items-center gap-2">
-                            <Button
-                                variant="ghost"
-                                size="icon"
-                                className="h-8 w-8 rounded-lg"
-                                onClick={onConfigure}
-                            >
-                                <IconSettings size={16} />
-                            </Button>
-                            {item.id === "zerodha" && (
+                            {onConfigure && (
+                                <Button
+                                    variant="ghost"
+                                    size="icon"
+                                    className="h-8 w-8 rounded-lg"
+                                    onClick={onConfigure}
+                                >
+                                    <IconSettings size={16} />
+                                </Button>
+                            )}
+                            {item.id === "zerodha" && onLogin && (
                                 <Button
                                     variant="outline"
                                     size="sm"
@@ -259,18 +283,16 @@ function IntegrationCard({ item, onConfigure, onLogin }: { item: any, onConfigur
                             )}
                             <Switch
                                 checked={true}
-                                disabled={isSyncing}
-                                onCheckedChange={async (checked) => {
-                                    if (checked) {
-                                        setIsSyncing(true);
-                                        try {
-                                            await syncUserProgress();
-                                            toast.success("Progress synced successfully");
-                                        } catch (e) {
-                                            toast.error("Manual sync failed");
-                                        } finally {
-                                            setIsSyncing(false);
-                                        }
+                                onCheckedChange={(checked) => {
+                                    if (!checked && onToggle) {
+                                        onToggle(checked);
+                                    }
+                                    // Note: Resend logic might allow checking ON again if we implemented it, 
+                                    // but for "Deleting" or disconnecting, usually it's one way until re-configured.
+                                    // But for Resend (email toggle), it's a true toggle.
+                                    // So we should allow onToggle to be called for both true/false if valid.
+                                    if (item.id === "resend" && onToggle) {
+                                        if (checked) onToggle(true);
                                     }
                                 }}
                             />
@@ -282,14 +304,25 @@ function IntegrationCard({ item, onConfigure, onLogin }: { item: any, onConfigur
                             <div className="h-2 w-2 rounded-full bg-amber-500" />
                             <span className="text-xs font-bold text-amber-500 tracking-wider uppercase">Not Linked</span>
                         </div>
-                        <Button
-                            variant="outline"
-                            size="sm"
-                            className="h-8 text-[10px] font-black uppercase tracking-widest"
-                            onClick={onConfigure}
-                        >
-                            Configure
-                        </Button>
+                        <div className="flex items-center gap-2">
+                            {item.id === "resend" ? (
+                                <Switch
+                                    checked={false}
+                                    onCheckedChange={(checked) => {
+                                        if (checked && onToggle) onToggle(true);
+                                    }}
+                                />
+                            ) : (
+                                <Button
+                                    variant="outline"
+                                    size="sm"
+                                    className="h-8 text-[10px] font-black uppercase tracking-widest"
+                                    onClick={onConfigure}
+                                >
+                                    Configure
+                                </Button>
+                            )}
+                        </div>
                     </>
                 ) : (
                     <>
@@ -303,7 +336,7 @@ function IntegrationCard({ item, onConfigure, onLogin }: { item: any, onConfigur
                     </>
                 )}
             </CardFooter>
-            {item.status === "connected" && (
+            {isConnected && (
                 <div className="absolute top-4 right-4 text-emerald-500/20 group-hover:text-emerald-500/40 transition-colors">
                     <IconShieldCheck size={48} stroke={1} />
                 </div>

@@ -23,6 +23,7 @@ interface UserStats {
     last_activity_date?: string;
     daily_risk_amount?: number;
     risk_locked?: boolean;
+    email_notifications?: boolean;
 }
 
 interface StatsContextType {
