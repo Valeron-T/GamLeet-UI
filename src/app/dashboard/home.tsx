@@ -8,7 +8,7 @@ import TaskQuestion from "@/components/task-question"
 import { Card, CardContent } from "@/components/ui/card"
 import { SidebarInset, SidebarProvider } from "@/components/ui/sidebar.tsx"
 import { Progress } from "@/components/ui/progress";
-import { RefreshCcw, Zap } from "lucide-react"
+import { Calendar, RefreshCcw, Zap } from "lucide-react"
 import { FaFire } from "react-icons/fa";
 import { useEffect, useState } from "react";
 import { fetchDailyQuestions, DailyQuestionsResponse, syncUserProgress } from "@/api/dashboard";
@@ -195,22 +195,37 @@ export default function Home() {
                           <span className="text-[10px] uppercase font-black tracking-widest text-primary">Store</span>
                         </button>
                         <button
-                          className="flex flex-col items-center justify-center p-4 rounded-xl border border-border/50 bg-muted/10 hover:bg-muted/20 hover:border-border transition-all group"
+                          className={`flex flex-col items-center justify-center p-4 rounded-xl border transition-all group ${dailyData?.daily_problem?.status === 'completed'
+                            ? 'border-green-500/30 bg-green-500/10 hover:bg-green-500/20'
+                            : 'border-border/50 bg-muted/10 hover:bg-muted/20 hover:border-border'
+                            }`}
                           onClick={() => {
-                            if (dailyData?.daily_link) {
-                              window.open(dailyData.daily_link, '_blank');
+                            const link = dailyData?.daily_link ||
+                              (dailyData?.daily_problem?.slug ? `https://leetcode.com/problems/${dailyData.daily_problem.slug}` : null);
+
+                            if (link) {
+                              window.open(link, '_blank');
                             } else {
                               toast.info("Daily problem link not available yet");
                             }
                           }}
                         >
                           <div className="relative mb-2">
-                            <Zap size={24} className="text-muted-foreground group-hover:text-primary transition-colors" />
-                            <span className="absolute -top-1 -right-4 bg-primary text-primary-foreground text-[8px] font-black px-1 rounded-sm shadow-sm opacity-0 group-hover:opacity-100 transition-opacity whitespace-nowrap">
-                              +85 GC
-                            </span>
+                            {dailyData?.daily_problem?.status === 'completed' ? (
+                              <Calendar size={24} className="text-green-500" fill="currentColor" />
+                            ) : (
+                              <Calendar size={24} className="text-muted-foreground group-hover:text-red-400 transition-colors" />
+                            )}
+
+                            {dailyData?.daily_problem?.status !== 'completed' && (
+                              <span className="absolute -top-1 -right-4 bg-red-500 text-white text-[8px] font-black px-1 rounded-sm shadow-sm opacity-0 group-hover:opacity-100 transition-opacity whitespace-nowrap">
+                                +30 GC
+                              </span>
+                            )}
                           </div>
-                          <span className="text-[10px] uppercase font-black tracking-widest">Quests</span>
+                          <span className={`text-[10px] uppercase font-black tracking-widest ${dailyData?.daily_problem?.status === 'completed' ? 'text-green-600' : ''}`}>
+                            {dailyData?.daily_problem?.status === 'completed' ? 'Done' : 'Daily'}
+                          </span>
                         </button>
                       </div>
                     </CardContent>

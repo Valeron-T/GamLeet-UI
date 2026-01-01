@@ -6,7 +6,12 @@ export interface DailyQuestionsResponse {
     medium: { title: string; topics: string; slug: string; difficulty: string; status: "unattempted" | "attempted" | "completed" };
     hard: { title: string; topics: string; slug: string; difficulty: string; status: "unattempted" | "attempted" | "completed" };
   };
-  daily_link: string;
+  daily_link?: string; // Legacy support or direct link
+  daily_problem?: {
+    title: string;
+    slug: string;
+    status: "unattempted" | "completed";
+  };
 }
 
 export async function fetchDailyQuestions(): Promise<DailyQuestionsResponse> {
