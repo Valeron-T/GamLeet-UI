@@ -1,14 +1,16 @@
 import { apiFetch } from "./client";
 
-export interface DailyQuestions {
-  easy: { title: string; topics: string; slug: string; difficulty: string; status: "unattempted" | "attempted" | "completed" };
-  medium: { title: string; topics: string; slug: string; difficulty: string; status: "unattempted" | "attempted" | "completed" };
-  hard: { title: string; topics: string; slug: string; difficulty: string; status: "unattempted" | "attempted" | "completed" };
+export interface DailyQuestionsResponse {
+  problems: {
+    easy: { title: string; topics: string; slug: string; difficulty: string; status: "unattempted" | "attempted" | "completed" };
+    medium: { title: string; topics: string; slug: string; difficulty: string; status: "unattempted" | "attempted" | "completed" };
+    hard: { title: string; topics: string; slug: string; difficulty: string; status: "unattempted" | "attempted" | "completed" };
+  };
+  daily_link: string;
 }
 
-export async function fetchDailyQuestions() {
-  const data = await apiFetch("/daily-questions");
-  return data.problems;
+export async function fetchDailyQuestions(): Promise<DailyQuestionsResponse> {
+  return apiFetch("/daily-questions");
 }
 
 export async function fetchUserStats() {

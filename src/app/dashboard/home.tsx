@@ -8,10 +8,10 @@ import TaskQuestion from "@/components/task-question"
 import { Card, CardContent } from "@/components/ui/card"
 import { SidebarInset, SidebarProvider } from "@/components/ui/sidebar.tsx"
 import { Progress } from "@/components/ui/progress";
-import { Calendar, RefreshCcw } from "lucide-react"
+import { RefreshCcw, Zap } from "lucide-react"
 import { FaFire } from "react-icons/fa";
 import { useEffect, useState } from "react";
-import { fetchDailyQuestions, DailyQuestions, syncUserProgress } from "@/api/dashboard";
+import { fetchDailyQuestions, DailyQuestionsResponse, syncUserProgress } from "@/api/dashboard";
 import { Skeleton } from "@/components/ui/skeleton.tsx";
 import { toast } from "sonner";
 import { useStats } from "@/contexts/StatsContext";
@@ -43,12 +43,12 @@ export default function Home() {
 
   const { stats, refreshStats } = useStats()
   const totalDuration = 3600 * 8
-  const [dailyQuestions, setDailyQuestions] = useState<DailyQuestions | null>(null);
+  const [dailyData, setDailyData] = useState<DailyQuestionsResponse | null>(null);
   const [syncing, setSyncing] = useState(false);
 
   useEffect(() => {
     fetchDailyQuestions()
-      .then(setDailyQuestions)
+      .then(setDailyData)
       .catch(console.error);
   }, []);
 
@@ -56,11 +56,11 @@ export default function Home() {
     setSyncing(true);
     try {
       await syncUserProgress();
-      const [, newQuestions] = await Promise.all([
+      const [, newData] = await Promise.all([
         refreshStats(),
         fetchDailyQuestions()
       ]);
-      setDailyQuestions(newQuestions);
+      setDailyData(newData);
       toast.success("Progress synchronized with LeetCode!");
     } catch (error) {
       console.error("Sync failed:", error);
@@ -71,9 +71,13 @@ export default function Home() {
   };
 
   // Logic for progress bar: 
-  const solvedToday = stats?.last_activity_date === new Date().toISOString().split('T')[0];
-  const progressValue = solvedToday ? 100 : 0;
-  const progressText = solvedToday ? "1 of 1 Daily Challenge Completed" : "0 of 1 Daily Challenge Completed";
+  const solvedCount = dailyData ?
+    (dailyData.problems.easy.status === 'completed' ? 1 : 0) +
+    (dailyData.problems.medium.status === 'completed' ? 1 : 0) +
+    (dailyData.problems.hard.status === 'completed' ? 1 : 0)
+    : 0;
+  const progressValue = Math.round((solvedCount / 3) * 100);
+  const progressText = `${solvedCount} of 3 Daily Challenges Completed`;
 
   return (
     <SidebarProvider>
@@ -91,7 +95,7 @@ export default function Home() {
                   <div className="text-center mb-8">
                     <h1 className="text-3xl font-bold tracking-tight bg-clip-text text-transparent bg-gradient-to-r from-foreground to-foreground/60">Curated Problems</h1>
                     <p className="text-sm text-muted-foreground mt-2 max-w-md mx-auto">
-                      Complete at least 1 problem to maintain your streak. Refreshes daily at 3:30 PM IST.
+                      Complete at least 1 problem to maintain your streak.<br /> Refreshes daily at 3:30 PM IST.
                     </p>
                   </div>
                   <div className="space-y-4">
@@ -111,28 +115,28 @@ export default function Home() {
                           Connect Now <RefreshCcw size={14} />
                         </button>
                       </div>
-                    ) : dailyQuestions ? (
+                    ) : dailyData ? (
                       <>
                         <TaskQuestion
-                          title={dailyQuestions.easy.title}
-                          tags={dailyQuestions.easy.topics?.split(", ") || []}
-                          state={dailyQuestions.easy.status}
-                          difficulty={dailyQuestions.easy.difficulty.toLowerCase().startsWith('h') ? 'hard' : dailyQuestions.easy.difficulty.toLowerCase().startsWith('m') ? 'med' : 'easy'}
-                          slug={dailyQuestions.easy.slug}
+                          title={dailyData.problems.easy.title}
+                          tags={dailyData.problems.easy.topics?.split(", ") || []}
+                          state={dailyData.problems.easy.status}
+                          difficulty={dailyData.problems.easy.difficulty.toLowerCase().startsWith('h') ? 'hard' : dailyData.problems.easy.difficulty.toLowerCase().startsWith('m') ? 'med' : 'easy'}
+                          slug={dailyData.problems.easy.slug}
                         />
                         <TaskQuestion
-                          title={dailyQuestions.medium.title}
-                          tags={dailyQuestions.medium.topics?.split(", ") || []}
-                          state={dailyQuestions.medium.status}
-                          difficulty={dailyQuestions.medium.difficulty.toLowerCase().startsWith('h') ? 'hard' : dailyQuestions.medium.difficulty.toLowerCase().startsWith('m') ? 'med' : 'easy'}
-                          slug={dailyQuestions.medium.slug}
+                          title={dailyData.problems.medium.title}
+                          tags={dailyData.problems.medium.topics?.split(", ") || []}
+                          state={dailyData.problems.medium.status}
+                          difficulty={dailyData.problems.medium.difficulty.toLowerCase().startsWith('h') ? 'hard' : dailyData.problems.medium.difficulty.toLowerCase().startsWith('m') ? 'med' : 'easy'}
+                          slug={dailyData.problems.medium.slug}
                         />
                         <TaskQuestion
-                          title={dailyQuestions.hard.title}
-                          tags={dailyQuestions.hard.topics?.split(", ") || []}
-                          state={dailyQuestions.hard.status}
-                          difficulty={dailyQuestions.hard.difficulty.toLowerCase().startsWith('h') ? 'hard' : dailyQuestions.hard.difficulty.toLowerCase().startsWith('m') ? 'med' : 'easy'}
-                          slug={dailyQuestions.hard.slug}
+                          title={dailyData.problems.hard.title}
+                          tags={dailyData.problems.hard.topics?.split(", ") || []}
+                          state={dailyData.problems.hard.status}
+                          difficulty={dailyData.problems.hard.difficulty.toLowerCase().startsWith('h') ? 'hard' : dailyData.problems.hard.difficulty.toLowerCase().startsWith('m') ? 'med' : 'easy'}
+                          slug={dailyData.problems.hard.slug}
                         />
                       </>
                     ) : (
@@ -167,10 +171,10 @@ export default function Home() {
                           <p className="text-sm text-muted-foreground">{progressText}</p>
                         </div>
                         <div className="w-1/2">
-                          <Progress value={progressValue} className="h-2 bg-muted/20" />
+                          <Progress value={progressValue} className={`h-2 ${progressValue === 100 ? 'bg-green-500/20' : 'bg-muted/20'}`} />
                           <div className="flex justify-between mt-1.5">
-                            <span className="text-[10px] uppercase font-bold text-muted-foreground">Focus</span>
-                            <span className="text-[10px] uppercase font-bold text-primary">{progressValue}%</span>
+                            <span className="text-[10px] uppercase font-bold text-muted-foreground">{progressValue === 100 ? 'Complete' : 'Focus'}</span>
+                            <span className={`text-[10px] uppercase font-bold ${progressValue === 100 ? 'text-green-500' : 'text-primary'}`}>{progressValue}%</span>
                           </div>
                         </div>
                       </div>
@@ -192,10 +196,21 @@ export default function Home() {
                         </button>
                         <button
                           className="flex flex-col items-center justify-center p-4 rounded-xl border border-border/50 bg-muted/10 hover:bg-muted/20 hover:border-border transition-all group"
-                          onClick={() => console.log("Calendar clicked")}
+                          onClick={() => {
+                            if (dailyData?.daily_link) {
+                              window.open(dailyData.daily_link, '_blank');
+                            } else {
+                              toast.info("Daily problem link not available yet");
+                            }
+                          }}
                         >
-                          <Calendar size={24} className="mb-2 text-muted-foreground group-hover:text-foreground transition-colors" />
-                          <span className="text-[10px] uppercase font-black tracking-widest">Log</span>
+                          <div className="relative mb-2">
+                            <Zap size={24} className="text-muted-foreground group-hover:text-primary transition-colors" />
+                            <span className="absolute -top-1 -right-4 bg-primary text-primary-foreground text-[8px] font-black px-1 rounded-sm shadow-sm opacity-0 group-hover:opacity-100 transition-opacity whitespace-nowrap">
+                              +85 GC
+                            </span>
+                          </div>
+                          <span className="text-[10px] uppercase font-black tracking-widest">Quests</span>
                         </button>
                       </div>
                     </CardContent>
