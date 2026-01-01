@@ -1,54 +1,88 @@
-# React + TypeScript + Vite
+# 🎨 GamLeet UI — The Dashboard of Your Financial Doom
 
-This template provides a minimal setup to get React working in Vite with HMR and some ESLint rules.
+**GamLeet UI** is the visual command center for **GamLeet**, where you can watch your financial future crumble in real-time if you skip your DSA practice. It provides a sleek, "premium" interface to track your streaks, manage integrations, and buy power-ups (to save your wallet).
 
-Currently, two official plugins are available:
+---
 
-- [@vitejs/plugin-react](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react/README.md) uses [Babel](https://babeljs.io/) for Fast Refresh
-- [@vitejs/plugin-react-swc](https://github.com/vitejs/vite-plugin-react-swc) uses [SWC](https://swc.rs/) for Fast Refresh
+## ✨ Features
 
-## Expanding the ESLint configuration
+- **📊 Visual Dashboard**: See your `Lifetime Loss`, `Current Streak`, and `Available Balance` at a glance.
+- **🗺️ Interactive Walkthrough**: New user? Get a guided tour of the carnage (and features) with our integrated `driver.js` walkthrough.
+- **🔌 Integrations Manager**: seamlessly connect your **LeetCode** (for tracking) and **Zerodha** (for suffering) accounts.
+- **🛒 Power-up Store**: Spent `GamCoins` earned from consistency to buy `Streak Freezes` and `Penalty Shields`.
+- **📈 Progress Tracking**: Visual progress bars for your daily 3-problem quota (Easy/Medium/Hard).
+- **💅 Premium Aesthetics**: Built with Tailwind CSS, Shadcn UI, and Framer Motion for that "it hurts less if it looks good" vibe.
 
-If you are developing a production application, we recommend updating the configuration to enable type-aware lint rules:
+---
 
-```js
-export default tseslint.config({
-  extends: [
-    // Remove ...tseslint.configs.recommended and replace with this
-    ...tseslint.configs.recommendedTypeChecked,
-    // Alternatively, use this for stricter rules
-    ...tseslint.configs.strictTypeChecked,
-    // Optionally, add this for stylistic rules
-    ...tseslint.configs.stylisticTypeChecked,
-  ],
-  languageOptions: {
-    // other options...
-    parserOptions: {
-      project: ['./tsconfig.node.json', './tsconfig.app.json'],
-      tsconfigRootDir: import.meta.dirname,
-    },
-  },
-})
-```
+## 🛠️ Tech Stack
 
-- You can also install [eslint-plugin-react-x](https://github.com/Rel1cx/eslint-react/tree/main/packages/plugins/eslint-plugin-react-x) and [eslint-plugin-react-dom](https://github.com/Rel1cx/eslint-react/tree/main/packages/plugins/eslint-plugin-react-dom) for React-specific lint rules:
+- **Framework**: React 18 + Vite
+- **Language**: TypeScript
+- **Styling**: Tailwind CSS 4
+- **Components**: Shadcn UI + Radix Primitives
+- **State Management**: React Context (`StatsContext`, `AuthContext`)
+- **Walkthrough**: `driver.js`
+- **Icons**: Tabler Icons & Lucide React
 
-```js
-// eslint.config.js
-import reactX from 'eslint-plugin-react-x'
-import reactDom from 'eslint-plugin-react-dom'
+---
 
-export default tseslint.config({
-  plugins: {
-    // Add the react-x and react-dom plugins
-    'react-x': reactX,
-    'react-dom': reactDom,
-  },
-  rules: {
-    // other rules...
-    // Enable its recommended typescript rules
-    ...reactX.configs['recommended-typescript'].rules,
-    ...reactDom.configs.recommended.rules,
-  },
-})
-```
+## 🚀 Getting Started
+
+### Prerequisites
+
+- Node.js (v18+)
+- The **GamLeet Backend** running (usually on port `8000`)
+
+### Installation
+
+1. **Clone the repo**
+   ```bash
+   git clone https://github.com/valeron-t/gamleet-ui.git
+   cd gamleet-ui
+   ```
+
+2. **Install Dependencies**
+   ```bash
+   npm install
+   ```
+
+3. **Configure Environment**
+   Create a `.env` file in the root directory:
+   ```env
+   VITE_API_BASE_URL=http://localhost:8000
+   VITE_GOOGLE_CLIENT_ID="your-google-client-id"
+   ```
+
+4. **Run Development Server**
+   ```bash
+   npm run dev
+   ```
+
+5. **Build for Production**
+   ```bash
+   npm run build
+   ```
+
+---
+
+## 📸 Snapshots
+
+*Imagine beautiful screenshots here of:*
+- *The Dashboard showing "Rs 500 Lifetime Loss"*
+- *The Power-up Store selling "Streak Freezes"*
+- *The Integration settings page*
+
+---
+
+## 🤝 Contributing
+
+1. Fork it.
+2. Create your feature branch (`git checkout -b feature/cool-new-agony`).
+3. Commit your changes (`git commit -m 'Added more ways to lose money'`).
+4. Push to the branch (`git push origin feature/cool-new-agony`).
+5. Open a Pull Request.
+
+---
+
+### Built by @valerontoscano
