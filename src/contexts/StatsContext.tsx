@@ -21,6 +21,8 @@ interface UserStats {
     allow_paid?: number;
     zerodha_error?: string;
     last_activity_date?: string;
+    daily_risk_amount?: number;
+    risk_locked?: boolean;
 }
 
 interface StatsContextType {

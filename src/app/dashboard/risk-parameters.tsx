@@ -4,37 +4,37 @@ import { SidebarInset, SidebarProvider } from "@/components/ui/sidebar.tsx"
 import { Card, CardContent, CardDescription, CardHeader, CardTitle, CardFooter } from "@/components/ui/card"
 import { Button } from "@/components/ui/button"
 import { Badge } from "@/components/ui/badge"
-import { Check, ShieldAlert, Zap, TrendingUp, ExternalLink, Heart, Sparkles, Flame } from "lucide-react"
+import { ShieldAlert, TrendingUp, ExternalLink, Heart, Sparkles, Flame, Shuffle, Lock, Unlock } from "lucide-react"
 import { Progress } from "@/components/ui/progress"
+import { Input } from "@/components/ui/input"
+import { Label } from "@/components/ui/label"
+import { Switch } from "@/components/ui/switch"
 import { useState, useEffect } from "react"
 import { fetchUserMargins, updateDifficulty } from "@/api/dashboard"
 import { toast } from "sonner"
 import { useStats } from "@/contexts/StatsContext"
 
-const pennyStocks = [
-    { ticker: "SUZELON", name: "Suzlon Energy", price: "Rs 42.50", volatility: "High" },
-    { ticker: "IDEA", name: "Vodafone Idea", price: "Rs 13.20", volatility: "Extreme" },
-    { ticker: "YESBANK", name: "Yes Bank Ltd.", price: "Rs 24.15", volatility: "Medium" },
-    { ticker: "ZOMATO", name: "Zomato Ltd.", price: "Rs 185.00", volatility: "High" }, // Not exactly penny but volatile
-    { ticker: "JPPOWER", name: "JP Power Ventures", price: "Rs 18.90", volatility: "High" },
-    { ticker: "UCOBANK", name: "UCO Bank", price: "Rs 52.10", volatility: "Medium" },
-];
-
 export default function RiskParameters() {
     const { stats, refreshStats } = useStats()
     const [difficulty, setDifficulty] = useState("");
-    const [selectedStock, setSelectedStock] = useState("SUZELON");
     const [margins, setMargins] = useState<any>(null);
     const [loading, setLoading] = useState(true);
     const [saving, setSaving] = useState(false);
+
+    // Risk Configuration State
+    const [riskAmount, setRiskAmount] = useState<string>("50");
+    const [locked, setLocked] = useState(false);
 
     useEffect(() => {
         async function loadInitialData() {
             try {
                 const marginData = await fetchUserMargins();
                 setMargins(marginData);
-                if (stats?.difficulty_mode) {
-                    setDifficulty(stats.difficulty_mode);
+                if (stats) {
+                    if (stats.difficulty_mode) setDifficulty(stats.difficulty_mode);
+                    if (stats.daily_risk_amount) setRiskAmount(stats.daily_risk_amount.toString());
+                    // Use a safe check for risk_locked as it might be undefined in older cached stats
+                    setLocked(!!stats.risk_locked);
                 }
             } catch (error) {
                 console.error("Failed to fetch margins:", error);
@@ -48,7 +48,7 @@ export default function RiskParameters() {
     const handleSave = async () => {
         setSaving(true);
         try {
-            await updateDifficulty(difficulty);
+            await updateDifficulty(difficulty, parseInt(riskAmount) || 50, locked);
             await refreshStats();
             toast.success("Accountability settings updated!");
         } catch (error) {
@@ -73,7 +73,7 @@ export default function RiskParameters() {
                     </div>
 
                     <div className="grid gap-4">
-                        {/* Difficulty Selection - Full Width for better readability of modes */}
+                        {/* Difficulty Selection */}
                         <Card>
                             <CardHeader className="pb-3">
                                 <div className="flex items-center gap-2">
@@ -85,8 +85,8 @@ export default function RiskParameters() {
                             <CardContent className="flex-1 pb-4">
                                 <div className="grid gap-3">
                                     <div
-                                        onClick={() => setDifficulty('sandbox')}
-                                        className={`p-4 rounded-xl border-2 transition-all cursor-pointer ${difficulty === 'sandbox' ? 'border-primary bg-primary/5' : 'border-white/5 hover:border-white/10'}`}
+                                        onClick={() => !locked && setDifficulty('sandbox')}
+                                        className={`p-4 rounded-xl border-2 transition-all cursor-pointer ${difficulty === 'sandbox' ? 'border-primary bg-primary/5' : 'border-white/5 hover:border-white/10'} ${locked ? 'opacity-50 cursor-not-allowed' : ''}`}
                                     >
                                         <div className="flex items-start gap-3">
                                             <div className={`mt-1 size-4 rounded-full border-2 flex items-center justify-center ${difficulty === 'sandbox' ? 'border-primary bg-primary' : 'border-muted-foreground'}`}>
@@ -103,8 +103,8 @@ export default function RiskParameters() {
                                     </div>
 
                                     <div
-                                        onClick={() => setDifficulty('normal')}
-                                        className={`p-4 rounded-xl border-2 transition-all cursor-pointer ${difficulty === 'normal' ? 'border-primary bg-primary/5' : 'border-white/5 hover:border-white/10'}`}
+                                        onClick={() => !locked && setDifficulty('normal')}
+                                        className={`p-4 rounded-xl border-2 transition-all cursor-pointer ${difficulty === 'normal' ? 'border-primary bg-primary/5' : 'border-white/5 hover:border-white/10'} ${locked ? 'opacity-50 cursor-not-allowed' : ''}`}
                                     >
                                         <div className="flex items-start gap-3">
                                             <div className={`mt-1 size-4 rounded-full border-2 flex items-center justify-center ${difficulty === 'normal' ? 'border-primary bg-primary' : 'border-muted-foreground'}`}>
@@ -121,8 +121,8 @@ export default function RiskParameters() {
                                     </div>
 
                                     <div
-                                        onClick={() => setDifficulty('hardcore')}
-                                        className={`p-4 rounded-xl border-2 transition-all cursor-pointer ${difficulty === 'hardcore' ? 'border-destructive bg-destructive/5' : 'border-white/5 hover:border-white/10'}`}
+                                        onClick={() => !locked && setDifficulty('hardcore')}
+                                        className={`p-4 rounded-xl border-2 transition-all cursor-pointer ${difficulty === 'hardcore' ? 'border-destructive bg-destructive/5' : 'border-white/5 hover:border-white/10'} ${locked ? 'opacity-50 cursor-not-allowed' : ''}`}
                                     >
                                         <div className="flex items-start gap-3">
                                             <div className={`mt-1 size-4 rounded-full border-2 flex items-center justify-center ${difficulty === 'hardcore' ? 'border-destructive bg-destructive' : 'border-muted-foreground'}`}>
@@ -139,8 +139,8 @@ export default function RiskParameters() {
                                     </div>
 
                                     <div
-                                        onClick={() => setDifficulty('god')}
-                                        className={`p-4 rounded-xl border-2 transition-all cursor-pointer ${difficulty === 'god' ? 'border-orange-500 bg-orange-500/5' : 'border-white/5 hover:border-white/10'}`}
+                                        onClick={() => !locked && setDifficulty('god')}
+                                        className={`p-4 rounded-xl border-2 transition-all cursor-pointer ${difficulty === 'god' ? 'border-orange-500 bg-orange-500/5' : 'border-white/5 hover:border-white/10'} ${locked ? 'opacity-50 cursor-not-allowed' : ''}`}
                                     >
                                         <div className="flex items-start gap-3">
                                             <div className={`mt-1 size-4 rounded-full border-2 flex items-center justify-center ${difficulty === 'god' ? 'border-orange-500 bg-orange-500' : 'border-muted-foreground'}`}>
@@ -257,49 +257,67 @@ export default function RiskParameters() {
                             </Card>
                         </div>
 
-                        {/* Stock Picker */}
-                        <Card className="md:col-span-2">
-                            <CardHeader>
+                        {/* Risk Configuration Card */}
+                        <Card className="md:col-span-2 border-amber-500/20 overflow-hidden p-0 gap-0">
+                            <CardHeader className="p-6 pb-2">
                                 <div className="flex items-center gap-2">
-                                    <Zap className="text-amber-500 size-5" />
-                                    <CardTitle>Penny Stock Wall selection</CardTitle>
+                                    <Shuffle className="text-amber-500 size-5" />
+                                    <CardTitle>Daily Risk Configuration</CardTitle>
                                 </div>
-                                <CardDescription>Choose the primary stock to be purchased when you fail a challenge.</CardDescription>
+                                <CardDescription>Stock selection is randomized by our backend. You control the risk.</CardDescription>
                             </CardHeader>
-                            <CardContent>
-                                <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
-                                    {pennyStocks.map((stock) => (
-                                        <div
-                                            key={stock.ticker}
-                                            onClick={() => setSelectedStock(stock.ticker)}
-                                            className={`p-4 rounded-2xl border-2 transition-all cursor-pointer relative overflow-hidden ${selectedStock === stock.ticker ? 'border-primary bg-primary/5' : 'border-white/5 hover:border-white/10'}`}
-                                        >
-                                            <div className="flex items-center justify-between mb-1">
-                                                <span className="text-lg font-black tracking-tighter">{stock.ticker}</span>
-                                                <Badge variant="outline" className="text-[10px] px-1">{stock.volatility}</Badge>
-                                            </div>
-                                            <p className="text-xs text-muted-foreground mb-3">{stock.name}</p>
-                                            <div className="text-sm font-bold font-mono">{stock.price}</div>
+                            <CardContent className="grid gap-6 px-6 pb-6">
+                                <div className="grid gap-4 md:grid-cols-2">
+                                    <div className="space-y-2">
+                                        <Label htmlFor="risk-amount">Max Risk Per Day (₹)</Label>
+                                        <Input
+                                            id="risk-amount"
+                                            placeholder="50"
+                                            type="number"
+                                            min="0"
+                                            value={riskAmount}
+                                            onChange={(e) => setRiskAmount(e.target.value)}
+                                            disabled={locked || loading}
+                                            className="font-mono"
+                                        />
+                                        <p className="text-[10px] text-muted-foreground">
+                                            Equivalent to approx. {Math.floor((parseInt(riskAmount) || 0) / 45)} shares of SUZLON or {Math.floor((parseInt(riskAmount) || 0) / 13)} shares of IDEA.
+                                        </p>
+                                    </div>
 
-                                            {selectedStock === stock.ticker && (
-                                                <div className="absolute bottom-4 right-4 text-primary">
-                                                    <Check size={20} />
-                                                </div>
-                                            )}
+                                    <div className="flex flex-col justify-end">
+                                        <div className="flex items-center space-x-2 rounded-lg border p-4 bg-muted/50">
+                                            <Switch
+                                                id="lock-mode"
+                                                checked={locked}
+                                                onCheckedChange={setLocked}
+                                                disabled={!!stats?.risk_locked}
+                                            />
+                                            <div className="flex-1 space-y-1">
+                                                <Label htmlFor="lock-mode" className="flex items-center gap-2">
+                                                    {locked ? <Lock size={14} className="text-amber-500" /> : <Unlock size={14} />}
+                                                    Lock In Configuration
+                                                </Label>
+                                                <p className="text-[10px] text-muted-foreground">
+                                                    {!!stats?.risk_locked
+                                                        ? "Configuration is locked for today."
+                                                        : "Once locked and saved, you cannot change settings for today."}
+                                                </p>
+                                            </div>
                                         </div>
-                                    ))}
+                                    </div>
                                 </div>
                             </CardContent>
-                            <CardFooter className="border-t border-white/5 pt-6 bg-primary/5">
+                            <CardFooter className="border-t border-white/5 p-6 bg-primary/5">
                                 <div className="flex flex-col md:flex-row items-center justify-between w-full gap-4">
                                     <div className="flex flex-col">
                                         <span className="text-xs font-bold uppercase text-muted-foreground">Active Policy</span>
-                                        <p className="text-sm font-medium">Buying <span className="text-primary font-bold">{selectedStock}</span> on failure</p>
+                                        <p className="text-sm font-medium">Buying <span className="text-primary font-bold">random penny stocks</span> up to <span className="text-primary font-bold">₹{riskAmount}</span> on failure</p>
                                     </div>
                                     <Button
                                         className="font-bold px-8"
                                         onClick={handleSave}
-                                        disabled={saving}
+                                        disabled={saving || (locked && stats?.risk_locked)} // Disable save if already saved as locked? Or allow save to just verify? Let's leave enabled but locked inputs
                                     >
                                         {saving ? "Saving..." : "Save Configuration"}
                                     </Button>

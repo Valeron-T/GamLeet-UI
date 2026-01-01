@@ -27,13 +27,13 @@ export async function syncUserProgress() {
   });
 }
 
-export async function updateDifficulty(difficulty_mode: string) {
+export async function updateDifficulty(difficulty_mode: string, daily_risk_amount?: number, risk_locked?: boolean) {
   return apiFetch("/user/difficulty", {
     method: "POST",
     headers: {
       "Content-Type": "application/json",
     },
-    body: JSON.stringify({ difficulty_mode }),
+    body: JSON.stringify({ difficulty_mode, daily_risk_amount, risk_locked }),
   });
 }
 
