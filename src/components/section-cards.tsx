@@ -30,8 +30,8 @@ export function SectionCards() {
 
   const lifetime_loss_statements: Record<number, { main: string; sub: string }> = {
     0: {
-      main: "Congrats! You've risked absolutely nothing.",
-      sub: "And that's exactly what you got in return."
+      main: "Congrats! You're a genius or scared of failure",
+      sub: "And that's exactly what you get in return."
     },
     1: {
       main: "Rs 100? Bold move, Warren Buffet.",

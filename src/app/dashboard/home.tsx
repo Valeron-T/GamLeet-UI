@@ -77,7 +77,7 @@ export default function Home() {
     (dailyData.problems.hard.status === 'completed' ? 1 : 0)
     : 0;
   const progressValue = Math.round((solvedCount / 3) * 100);
-  const progressText = `${solvedCount} of 3 Daily Challenges Completed`;
+  const progressText = `${solvedCount} of 3 Problems Completed`;
 
   return (
     <SidebarProvider>

@@ -93,3 +93,13 @@ export async function updateZerodhaCredentials(api_key: string, api_secret: stri
     body: JSON.stringify({ api_key, api_secret }),
   });
 }
+
+export async function purchasePowerup(powerup_id: string) {
+  return apiFetch("/user/purchase-powerup", {
+    method: "POST",
+    headers: {
+      "Content-Type": "application/json",
+    },
+    body: JSON.stringify({ powerup_id }),
+  });
+}

@@ -262,7 +262,15 @@ export default function ProblemSets() {
                                                 )}
                                             </div>
                                             <CardDescription>
-                                                Curated list of 150 essential LeetCode problems for interviews.
+                                                Curated list of 150 essential LeetCode problems for interviews by{" "}
+                                                <a
+                                                    href="https://neetcode.io/"
+                                                    target="_blank"
+                                                    rel="noopener noreferrer"
+                                                    className="underline underline-offset-4 hover:text-primary transition-colors"
+                                                >
+                                                    NeetCode
+                                                </a>.
                                             </CardDescription>
                                         </CardHeader>
                                         <CardContent>

@@ -3,6 +3,8 @@ import { SidebarTrigger } from "@/components/ui/sidebar.tsx"
 import { RiCopperCoinFill } from "react-icons/ri"
 import { useStats } from "@/contexts/StatsContext"
 import { Progress } from "@/components/ui/progress"
+import { AlertCircle } from "lucide-react"
+import { Tooltip, TooltipContent, TooltipTrigger } from "@/components/ui/tooltip"
 
 export function SiteHeader() {
   const { stats } = useStats()
@@ -11,6 +13,12 @@ export function SiteHeader() {
   const level = stats ? Math.floor(stats.total_xp / XP_PER_LEVEL) + 1 : 1
   const progress = stats ? (stats.total_xp % XP_PER_LEVEL) * (100 / XP_PER_LEVEL) : 0
   const currentXP = stats ? stats.total_xp % XP_PER_LEVEL : 0
+
+  const zerodhaStatus = stats ? {
+    connected: stats.zerodha_connected,
+    error: stats.zerodha_error,
+    needsLogin: !stats.zerodha_connected || !!stats.zerodha_error
+  } : null
 
   return (
     <header className="flex h-(--header-height) shrink-0 items-center gap-2 border-b transition-[width,height] ease-linear group-has-data-[collapsible=icon]/sidebar-wrapper:h-(--header-height)">
@@ -30,6 +38,22 @@ export function SiteHeader() {
           </div>
         </div>
         <div className="ml-auto flex items-center gap-4">
+          {zerodhaStatus?.needsLogin && (
+            <Tooltip>
+              <TooltipTrigger asChild>
+                <button
+                  onClick={() => window.location.href = "/integrations"}
+                  className="flex items-center gap-1.5 px-3 py-1.5 rounded-full bg-destructive/10 border border-destructive/20 text-destructive hover:bg-destructive/20 transition-all group"
+                >
+                  <AlertCircle size={14} className="animate-pulse" />
+                  <span className="text-[10px] font-black uppercase tracking-widest hidden sm:inline">Kite Required</span>
+                </button>
+              </TooltipTrigger>
+              <TooltipContent side="bottom" align="end" className="max-w-[200px]">
+                {zerodhaStatus.error || "Zerodha account not linked. Connect to track your daily risk and earn rewards."}
+              </TooltipContent>
+            </Tooltip>
+          )}
           {stats !== null && (
             <div className="flex items-center gap-1.5 bg-secondary/50 px-3 py-1.5 rounded-full border border-border/50 shadow-sm backdrop-blur-sm transition-all hover:bg-secondary/80">
               <RiCopperCoinFill size={18} color="#ffc900" className="drop-shadow-[0_0_8px_rgba(255,201,0,0.4)]" />

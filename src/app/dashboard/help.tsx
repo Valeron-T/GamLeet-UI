@@ -145,7 +145,10 @@ export default function Help() {
                             <p className="text-muted-foreground max-w-md font-medium text-sm mt-1">Join our tactical discord or report an anomaly on GitHub if you encounter any system disruptions.</p>
                         </div>
                         <div className="flex gap-4 relative z-10">
-                            <button className="px-6 py-3 rounded-xl bg-foreground text-background font-black uppercase tracking-widest text-xs transition-transform hover:scale-105 active:scale-95">
+                            <button
+                                onClick={() => window.open("https://discord.gg/fJyw5FWep2", "_blank")}
+                                className="px-6 py-3 rounded-xl bg-foreground text-background font-black uppercase tracking-widest text-xs transition-transform hover:scale-105 active:scale-95"
+                            >
                                 Discord
                             </button>
                             <button className="px-6 py-3 rounded-xl border border-border bg-card/50 font-black uppercase tracking-widest text-xs transition-all hover:border-primary/50 hover:text-primary">

@@ -10,6 +10,7 @@ import {
   IconPlug,
   IconHelp,
   IconBrandGithub,
+  IconBrandDiscord,
   IconWorld,
   IconRocket,
   IconListCheck,
@@ -18,6 +19,7 @@ import { useStats } from "@/contexts/StatsContext"
 
 import { NavMain } from "@/components/nav-main.tsx"
 import { NavUser } from "@/components/nav-user.tsx"
+import { NavSource } from "@/components/nav-source.tsx"
 import {
   Sidebar,
   SidebarContent,
@@ -25,6 +27,7 @@ import {
   SidebarHeader,
   SidebarMenu,
   SidebarMenuItem,
+  SidebarSeparator,
 } from "@/components/ui/sidebar.tsx"
 
 const data = {
@@ -93,6 +96,11 @@ const data = {
       icon: IconBrandGithub,
     },
     {
+      title: "Discord",
+      url: "https://discord.gg/fJyw5FWep2",
+      icon: IconBrandDiscord,
+    },
+    {
       title: "Website",
       url: "https://valeron.me",
       icon: IconWorld,
@@ -140,11 +148,14 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
           </SidebarMenuItem>
         </SidebarMenu>
       </SidebarHeader>
-      <SidebarContent>
+      <SidebarContent className="gap-0 overflow-x-hidden">
         <NavMain items={data.navOverview} label="Overview" />
         <NavMain items={data.navArsenal} label="Arsenal" />
         <NavMain items={data.navSystem} label="System" />
-        <NavMain items={data.navSecondary} label="Source" className="mt-auto" />
+        <div className="mt-auto overflow-hidden">
+          <SidebarSeparator />
+          <NavSource items={data.navSecondary} />
+        </div>
       </SidebarContent>
       <SidebarFooter>
         <NavUser user={user} />

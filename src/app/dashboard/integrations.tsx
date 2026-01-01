@@ -194,7 +194,10 @@ export default function Integrations() {
                             <h2 className="text-2xl font-black tracking-tight">Expand Your Ecosystem</h2>
                             <p className="text-muted-foreground max-w-lg font-medium">We're constantly adding new ways to keep you accountable. Suggest a new integration on our Discord.</p>
                         </div>
-                        <Button className="mt-4 rounded-xl px-8 font-black uppercase tracking-widest text-xs h-12">
+                        <Button
+                            onClick={() => window.open("https://discord.gg/fJyw5FWep2", "_blank")}
+                            className="mt-4 rounded-xl px-8 font-black uppercase tracking-widest text-xs h-12"
+                        >
                             Submit Suggestion
                         </Button>
                     </div>
@@ -233,7 +236,7 @@ function IntegrationCard({ item, onConfigure, onLogin }: { item: any, onConfigur
                     <>
                         <div className="flex items-center gap-2">
                             <div className="h-2 w-2 rounded-full bg-emerald-500 animate-pulse" />
-                            <span className="text-xs font-bold text-emerald-500 tracking-wider uppercase">Active Connection</span>
+                            <span className="text-xs font-bold text-emerald-500 tracking-wider uppercase">Active</span>
                         </div>
                         <div className="flex items-center gap-2">
                             <Button
